@@ -549,4 +549,8 @@
     <!-- Content description for install app icon -->
     <string name="ps_add_button_content_description">Install apps to Private Space</string>
     <string name="ps_app_content_description">Add files and more to Private Space</string>
+    
+    <!-- DT2S -->
+     <string name="pref_sleep_gesture_title">Double tap to sleep</string>
+     <string name="pref_sleep_gesture_summary">Double tap on empty space for screen off</string>
 </resources>
