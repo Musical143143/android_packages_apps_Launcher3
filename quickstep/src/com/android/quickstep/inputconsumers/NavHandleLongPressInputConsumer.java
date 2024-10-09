@@ -122,9 +122,9 @@ public class NavHandleLongPressInputConsumer extends DelegateInputConsumer {
         }
         mNavHandle = navHandle;
         mNavHandleWidth = navHandle.getNavHandleWidth(context);
-        mNavHandleLongPressHandler = NavHandleLongPressHandler.newInstance(context);
         mStatsLogManager = StatsLogManager.newInstance(context);
         mTopTaskTracker = TopTaskTracker.INSTANCE.get(context);
+        mNavHandleLongPressHandler = new NavHandleLongPressHandler(context);
     }
 
     @Override
@@ -238,8 +238,7 @@ public class NavHandleLongPressInputConsumer extends DelegateInputConsumer {
                 mNavHandle.isNavHandleStashedTaskbar() ? LAUNCHER_LONG_PRESS_STASHED_TASKBAR
                         : LAUNCHER_LONG_PRESS_NAVBAR);
 
-        Runnable longPressRunnable = mNavHandleLongPressHandler.getLongPressRunnable(mNavHandle,
-                getDisplayId());
+        Runnable longPressRunnable = mNavHandleLongPressHandler.getLongPressRunnable(mNavHandle);
         if (longPressRunnable == null) {
             return;
         }
