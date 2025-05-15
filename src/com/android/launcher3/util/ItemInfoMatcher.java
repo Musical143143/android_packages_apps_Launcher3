@@ -18,8 +18,9 @@ package com.android.launcher3.util;
 
 import android.content.ComponentName;
 import android.os.UserHandle;
-
 import androidx.annotation.NonNull;
+
+import com.android.internal.util.ClonedAppsUtils;
 
 import com.android.launcher3.LauncherSettings.Favorites;
 import com.android.launcher3.model.data.FolderInfo;
@@ -43,6 +44,12 @@ public abstract class ItemInfoMatcher {
 
     public static Predicate<ItemInfo> ofUser(UserHandle user) {
         return info -> info != null && info.user.equals(user);
+    }
+
+    public static Predicate<ItemInfo> ofCurrentOrDualUser(UserHandle user) {
+        return itemInfo -> itemInfo != null && (
+                ClonedAppsUtils.isClonedUser(itemInfo.user.getIdentifier()) || itemInfo.user.equals(user)
+        );
     }
 
     public static Predicate<ItemInfo> ofComponents(
