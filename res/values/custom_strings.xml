@@ -22,4 +22,8 @@
     <!-- Wallpaper zooming -->
     <string name="allow_wallpaper_zooming">Wallpaper zooming</string>
     <string name="allow_wallpaper_zooming_summary">Zoom in or out the wallpaper when using drawer or recent apps</string>
+
+    <!-- Search bar -->
+    <string name="label_search">Search</string>
+    <string name="pref_show_hotseat_search_title">Show hotseat search bar</string>
 </resources>

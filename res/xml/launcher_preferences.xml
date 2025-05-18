@@ -107,6 +107,11 @@
         android:persistent="true" />
 
     <SwitchPreferenceCompat
+        android:defaultValue="false"
+        android:key="pref_show_hotseat_search"
+        android:title="@string/pref_show_hotseat_search_title" />
+
+    <SwitchPreferenceCompat
          android:key="pref_sleep_gesture"
          android:title="@string/pref_sleep_gesture_title"
          android:summary="@string/pref_sleep_gesture_summary"

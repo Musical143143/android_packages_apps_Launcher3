@@ -26,6 +26,8 @@ import static com.android.launcher3.InvariantDeviceProfile.TYPE_MULTI_DISPLAY;
 import static com.android.launcher3.InvariantDeviceProfile.TYPE_TABLET;
 import static com.android.launcher3.states.RotationHelper.ALLOW_ROTATION_PREFERENCE_KEY;
 
+import static com.android.launcher3.Utilities.KEY_SHOW_HOTSEAT_SEARCH;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -60,8 +62,10 @@ import com.android.launcher3.R;
 import com.android.launcher3.lineage.LineageUtils;
 import com.android.launcher3.lineage.trust.TrustAppsActivity;
 import com.android.launcher3.states.RotationHelper;
+import com.android.launcher3.SettingsRepository;
 import com.android.launcher3.util.DisplayController;
 import com.android.launcher3.util.SettingsCache;
+
 
 /**
  * Settings activity for Launcher. Currently implements the following setting: Allow rotation
@@ -236,6 +240,8 @@ public class SettingsActivity extends FragmentActivity
             if (getActivity() != null && !TextUtils.isEmpty(getPreferenceScreen().getTitle())) {
                 getActivity().setTitle(getPreferenceScreen().getTitle());
             }
+            
+            SettingsRepository.get().addTunables(KEY_SHOW_HOTSEAT_SEARCH);
         }
 
         private boolean isKeyInPreferenceGroup(String targetKey, PreferenceGroup parent) {
@@ -381,6 +387,8 @@ public class SettingsActivity extends FragmentActivity
             if (mRestartOnResume) {
                 recreateActivityNow();
             }
+            
+            SettingsRepository.get().onResume();
         }
 
         @Override
@@ -390,12 +398,19 @@ public class SettingsActivity extends FragmentActivity
         }
 
         @Override
+        public void onPause() {
+            super.onPause();
+            SettingsRepository.get().onPause();
+        }
+
+        @Override
         public void onDestroy() {
             super.onDestroy();
             if (IS_DEBUG_DEVICE) {
                 SettingsCache.INSTANCE.get(getContext())
                         .unregister(Settings.Global.getUriFor(DEVELOPMENT_SETTINGS_ENABLED), this);
             }
+            SettingsRepository.get().removeAllTunables();
         }
 
         /**

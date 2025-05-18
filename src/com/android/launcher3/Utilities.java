@@ -156,6 +156,9 @@ public final class Utilities {
     public @interface AdjustmentDirection{}
 
     public static final String KEY_ALLOW_WALLPAPER_ZOOMING = "pref_allow_wallpaper_zooming";
+    public static final String KEY_SHOW_HOTSEAT_SEARCH= "pref_show_hotseat_search";
+    
+    public static final String GSA_PACKAGE = "com.google.android.googlequicksearchbox";
 
     /**
      * Returns true if theme is dark.
@@ -1008,5 +1011,11 @@ public final class Utilities {
     public static boolean canZoomWallpaper(Context context) {
         SharedPreferences prefs = LauncherPrefs.getPrefs(context.getApplicationContext());
         return prefs.getBoolean(KEY_ALLOW_WALLPAPER_ZOOMING, true);
+    }
+    
+    public static boolean isHotseatEnabled() {
+        return SettingsRepository.get().getPrefs().getBoolean(KEY_SHOW_HOTSEAT_SEARCH, false)
+            && SettingsRepository.get().isPackageInstalled(GSA_PACKAGE) 
+            && SettingsRepository.get().isPackageEnabled(GSA_PACKAGE);
     }
 }
