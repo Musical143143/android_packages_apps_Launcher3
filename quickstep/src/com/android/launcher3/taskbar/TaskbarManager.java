@@ -155,6 +155,9 @@ public class TaskbarManager implements DisplayDecorationListener {
 
     public static final Uri FORCE_SHOW_NAVBAR = LineageSettings.System.getUriFor(
             LineageSettings.System.FORCE_SHOW_NAVBAR);
+            
+    public static final Uri NAV_BAR_IME = Settings.Secure.getUriFor(
+            "sysui_show_nav_bar_ime");
 
     private final Context mBaseContext;
     private final int mPrimaryDisplayId;
@@ -484,6 +487,8 @@ public class TaskbarManager implements DisplayDecorationListener {
                 .register(NAVIGATION_BAR_HINT, mOnTaskBarChangeListener);
         SettingsCache.INSTANCE.get(mPrimaryWindowContext)
                 .register(FORCE_SHOW_NAVBAR, mOnTaskBarChangeListener);
+        SettingsCache.INSTANCE.get(mPrimaryWindowContext)
+                .register(NAV_BAR_IME, mOnTaskBarChangeListener);
         SystemDecorationChangeObserver.getINSTANCE().get(mPrimaryWindowContext)
                 .registerDisplayDecorationListener(this);
         mShutdownReceiver =
@@ -1145,6 +1150,8 @@ public class TaskbarManager implements DisplayDecorationListener {
                 .unregister(NAVIGATION_BAR_HINT, mOnTaskBarChangeListener);
         SettingsCache.INSTANCE.get(mPrimaryWindowContext)
                 .unregister(FORCE_SHOW_NAVBAR, mOnTaskBarChangeListener);
+        SettingsCache.INSTANCE.get(mPrimaryWindowContext)
+                .unregister(NAV_BAR_IME, mOnTaskBarChangeListener);
         SystemDecorationChangeObserver.getINSTANCE().get(mPrimaryWindowContext)
                 .unregisterDisplayDecorationListener(this);
         debugPrimaryTaskbar("destroy: unregistering component callbacks");
