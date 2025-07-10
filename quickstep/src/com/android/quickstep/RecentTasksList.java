@@ -45,6 +45,7 @@ import com.android.launcher3.util.window.WindowManagerProxy;
 import com.android.quickstep.util.DesktopTask;
 import com.android.quickstep.util.ExternalDisplaysKt;
 import com.android.quickstep.util.GroupTask;
+import com.android.quickstep.util.NTAppLockerHelper;
 import com.android.quickstep.util.SingleTask;
 import com.android.quickstep.util.SplitTask;
 import com.android.systemui.shared.recents.model.Task;
@@ -421,13 +422,13 @@ public class RecentTasksList implements WindowManagerProxy.DesktopVisibilityList
                 final TaskInfo taskInfo1 = rawTask.getBaseGroupedTask().getTaskInfo1();
                 final Task.TaskKey task1Key = new Task.TaskKey(taskInfo1);
                 final Task task1 = Task.from(task1Key, taskInfo1,
-                        tmpLockedUsers.get(task1Key.userId) /* isLocked */);
+                        isAppLocked(task1Key, tmpLockedUsers) /* isLocked */);
 
                 if (rawTask.isBaseType(TYPE_SPLIT)) {
                     final TaskInfo taskInfo2 = rawTask.getBaseGroupedTask().getTaskInfo2();
                     final Task.TaskKey task2Key = new Task.TaskKey(taskInfo2);
                     final Task task2 = Task.from(task2Key, taskInfo2,
-                            tmpLockedUsers.get(task2Key.userId) /* isLocked */);
+                            isAppLocked(task2Key, tmpLockedUsers) /* isLocked */);
                     final SplitConfigurationOptions.SplitBounds launcherSplitBounds =
                             convertShellSplitBoundsToLauncher(
                                     rawTask.getBaseGroupedTask().getSplitBounds());
@@ -442,7 +443,7 @@ public class RecentTasksList implements WindowManagerProxy.DesktopVisibilityList
                 Task task1 = loadKeysOnly
                         ? new Task(task1Key)
                         : Task.from(task1Key, taskInfo1,
-                                tmpLockedUsers.get(task1Key.userId) /* isLocked */);
+                                isAppLocked(task1Key, tmpLockedUsers) /* isLocked */);
                 Task task2 = null;
                 if (taskInfo2 != null) {
                     // Is split task
@@ -450,7 +451,7 @@ public class RecentTasksList implements WindowManagerProxy.DesktopVisibilityList
                     task2 = loadKeysOnly
                             ? new Task(task2Key)
                             : Task.from(task2Key, taskInfo2,
-                                    tmpLockedUsers.get(task2Key.userId) /* isLocked */);
+                                    isAppLocked(task2Key, tmpLockedUsers) /* isLocked */);
                 } else {
                     // Is fullscreen task
                     if (isFirstVisibleTaskFound) {
@@ -479,6 +480,11 @@ public class RecentTasksList implements WindowManagerProxy.DesktopVisibilityList
 
         return allTasks;
     }
+    
+    private boolean isAppLocked(Task.TaskKey key, SparseBooleanArray users) {
+        return NTAppLockerHelper.Companion.get().isAppLocked(key.getPackageName())
+            || users != null && users.get(key.userId);    
+    }
 
     private Task createTask(TaskInfo taskInfo, Set<Integer> minimizedTaskIds) {
         Task.TaskKey key = new Task.TaskKey(taskInfo);
@@ -487,6 +493,7 @@ public class RecentTasksList implements WindowManagerProxy.DesktopVisibilityList
         task.appBounds = taskInfo.configuration.windowConfiguration.getAppBounds();
         task.isVisible = taskInfo.isVisible;
         task.isMinimized = minimizedTaskIds.contains(taskInfo.taskId);
+        task.isLocked = isAppLocked(key, null);
         return task;
     }
 

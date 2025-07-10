@@ -28,6 +28,7 @@ import com.android.launcher3.model.data.TaskViewItemInfo
 import com.android.launcher3.util.SplitConfigurationOptions
 import com.android.launcher3.util.TransformingTouchDelegate
 import com.android.quickstep.TaskOverlayFactory
+import com.android.quickstep.util.NTAppLockerHelper
 import com.android.quickstep.ViewUtils.addAccessibleChildToList
 import com.android.quickstep.recents.domain.usecase.ThumbnailPosition
 import com.android.quickstep.recents.ui.mapper.TaskUiStateMapper
@@ -105,6 +106,8 @@ class TaskContainer(
             digitalWellBeingToast?.bind(task, taskView, snapshotView, stagePosition)
             if (!enableRefactorTaskThumbnail()) {
                 thumbnailViewDeprecated.bind(task, overlay, taskView)
+            } else {
+                thumbnailView.bind(isCameraSnapshot(), isTopAppLocked())
             }
         }
 
@@ -223,6 +226,19 @@ class TaskContainer(
         } else {
             thumbnailViewDeprecated.setSplashAlpha(progress)
         }
+    }
+
+    fun isCameraSnapshot(): Boolean {
+        val cmp = task?.topComponent?.packageName ?: return false
+        val result = cmp.contains("camera", ignoreCase = true) 
+            || cmp.contains("aperture", ignoreCase = true)
+        return result
+    }
+
+    fun isTopAppLocked(): Boolean {
+        val pkg = task?.key?.packageName ?: return false
+        val result = NTAppLockerHelper.get().isAppLockedWithoutCache(pkg)
+        return result
     }
 
     fun updateThumbnailMatrix(matrix: Matrix) {

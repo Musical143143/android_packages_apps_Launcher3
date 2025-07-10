@@ -28,6 +28,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewOutlineProvider
+import android.widget.ImageView
 import android.widget.FrameLayout
 import androidx.annotation.ColorInt
 import androidx.core.view.isInvisible
@@ -41,6 +42,7 @@ import com.android.quickstep.task.thumbnail.TaskThumbnailUiState.LiveTile
 import com.android.quickstep.task.thumbnail.TaskThumbnailUiState.Snapshot
 import com.android.quickstep.task.thumbnail.TaskThumbnailUiState.SnapshotSplash
 import com.android.quickstep.task.thumbnail.TaskThumbnailUiState.Uninitialized
+import com.android.quickstep.util.NTAppLockerHelper
 import com.android.quickstep.views.FixedSizeImageView
 import com.android.quickstep.views.TaskThumbnailViewHeader
 
@@ -59,6 +61,9 @@ class TaskThumbnailView : FrameLayout, ViewPool.Reusable {
     private var taskThumbnailViewHeader: TaskThumbnailViewHeader? = null
 
     private var uiState: TaskThumbnailUiState = Uninitialized
+    
+    private var isCamera = false
+    private var isAppLocked = false
 
     /**
      * Sets the outline bounds of the view. Default to use view's bound as outline when set to null.
@@ -123,11 +128,60 @@ class TaskThumbnailView : FrameLayout, ViewPool.Reusable {
         resetViews()
     }
 
+    fun bind(camera: Boolean, appLocked: Boolean) {
+        isCamera = camera
+        isAppLocked = appLocked
+    }
+    
+    fun getOverlayIcon(): Int? {
+        val icon = when {
+            isAppLocked -> R.drawable.nt_recent_app_locked_icon
+            isCamera -> R.drawable.nt_recent_camera_locked_icon
+            else -> null
+        }
+        return icon
+    }
+    
+    fun getOverlayColor(): Int? {
+        return if (canOverlay()) {
+            context.getColor(R.color.recent_app_locked_bg_color)
+        } else {
+            null
+        }
+    }
+
+    fun getIconColor(): Int? {
+        return if (canOverlay()) {
+            context.getColor(R.color.recent_app_locked_icon_color)
+        } else {
+            null
+        }
+    }
+
+    fun drawOverlayThumbnail() {
+        getOverlayIcon()?.let { iconRes ->
+            thumbnailView.setImageResource(iconRes)
+            thumbnailView.scaleType = ImageView.ScaleType.CENTER
+            thumbnailView.isInvisible = false
+        }
+        getOverlayColor()?.let { bgColor ->
+            drawBackground(bgColor)
+        }
+    }
+    
+    fun canOverlay(): Boolean {
+        return isAppLocked || isCamera
+    }
+
     fun setState(state: TaskThumbnailUiState, taskId: Int? = null) {
         if (uiState == state) return
         logDebug("taskId: $taskId - uiState changed from: $uiState to: $state")
         uiState = state
         resetViews()
+        if (canOverlay()) {
+            drawOverlayThumbnail()
+            return
+        }
         when (state) {
             is Uninitialized -> {}
             is LiveTile -> drawLiveWindow(state)

@@ -63,4 +63,6 @@
     <color name="materialColorSecondary">@color/system_secondary_dark</color>
     <color name="materialColorTertiary">@color/system_tertiary_dark</color>
     <color name="materialColorError">@color/system_error_dark</color>
+    <color name="recent_app_locked_bg_color">@android:color/system_neutral1_900</color>
+    <color name="recent_app_locked_icon_color">@android:color/system_neutral2_200</color>
 </resources>
