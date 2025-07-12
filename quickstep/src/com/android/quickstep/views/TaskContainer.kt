@@ -107,7 +107,7 @@ class TaskContainer(
             if (!enableRefactorTaskThumbnail()) {
                 thumbnailViewDeprecated.bind(task, overlay, taskView)
             } else {
-                thumbnailView.bind(isCameraSnapshot(), isTopAppLocked())
+                thumbnailView.bind(task)
             }
         }
 
@@ -226,19 +226,6 @@ class TaskContainer(
         } else {
             thumbnailViewDeprecated.setSplashAlpha(progress)
         }
-    }
-
-    fun isCameraSnapshot(): Boolean {
-        val cmp = task?.topComponent?.packageName ?: return false
-        val result = cmp.contains("camera", ignoreCase = true) 
-            || cmp.contains("aperture", ignoreCase = true)
-        return result
-    }
-
-    fun isTopAppLocked(): Boolean {
-        val pkg = task?.key?.packageName ?: return false
-        val result = NTAppLockerHelper.get().isAppLockedWithoutCache(pkg)
-        return result
     }
 
     fun updateThumbnailMatrix(matrix: Matrix) {
