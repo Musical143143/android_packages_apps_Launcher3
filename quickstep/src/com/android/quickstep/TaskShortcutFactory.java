@@ -67,6 +67,8 @@ import com.android.systemui.shared.recents.view.RecentsTransition;
 import com.android.systemui.shared.system.ActivityManagerWrapper;
 import com.android.wm.shell.shared.desktopmode.DesktopModeStatus;
 
+import com.android.internal.util.NTAppLockerHelper;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
@@ -360,6 +362,10 @@ public interface TaskShortcutFactory {
                 }
             }
 
+            if (NTAppLockerHelper.get().isAppLocked(task.getKey().getPackageName())) {
+                return null;
+            }
+
             return orientationHandler.getSplitPositionOptions(deviceProfile)
                     .stream()
                     .map((Function<SplitPositionOption, SystemShortcut>) option ->
@@ -418,6 +424,9 @@ public interface TaskShortcutFactory {
                 return null;
             }
             if (!isAvailable(container)) {
+                return null;
+            }
+            if (NTAppLockerHelper.get().isAppLocked(task.getKey().getPackageName())) {
                 return null;
             }
 

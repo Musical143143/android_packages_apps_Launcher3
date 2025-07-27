@@ -68,13 +68,18 @@ public class LoadTrustComponentsTask extends AsyncTask<Void, Integer, List<Trust
         int numPackages = apps.size();
         for (int i = 0; i < numPackages; i++) {
             ResolveInfo app = apps.get(i);
+            String pkgName = app.activityInfo.packageName;
 
-            if (!mAppFilter.shouldShowApp(app.activityInfo.getComponentName())) {
+            boolean isFilteredOut = !mAppFilter.shouldShowApp(app.activityInfo.getComponentName());
+            boolean isNotLaunchable = mPackageManager.getLaunchIntentForPackage(pkgName) == null;
+            boolean isSettings = "com.android.settings".equals(pkgName);
+            boolean shouldSkip = isFilteredOut || isNotLaunchable || isSettings;
+
+            if (shouldSkip) {
                 continue;
             }
 
             try {
-                String pkgName = app.activityInfo.packageName;
                 String label = mPackageManager.getApplicationLabel(
                         mPackageManager.getApplicationInfo(pkgName,
                                 PackageManager.GET_META_DATA)).toString();

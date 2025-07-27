@@ -83,7 +83,7 @@ public class TrustAppsActivity extends Activity implements
 
         final boolean hasSecureKeyguard = LineageUtils.hasSecureKeyguard(this);
         mAdapter = new TrustAppsAdapter(this, hasSecureKeyguard);
-        mDbHelper = TrustDatabaseHelper.getInstance(this);
+        mDbHelper = TrustDatabaseHelper.getInstance();
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());

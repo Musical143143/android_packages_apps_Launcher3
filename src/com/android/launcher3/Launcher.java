@@ -170,6 +170,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.os.BuildCompat;
 import androidx.window.embedding.RuleController;
 
+import com.android.internal.util.NTAppLockerHelper;
+
 import com.android.launcher3.DropTarget.DragObject;
 import com.android.launcher3.accessibility.LauncherAccessibilityDelegate;
 import com.android.launcher3.allapps.ActivityAllAppsContainerView;
@@ -518,6 +520,7 @@ public class Launcher extends StatefulActivity<LauncherState>
 
         super.onCreate(savedInstanceState);
         setWallpaperDependentTheme(this);
+        NTAppLockerHelper.init(this);
 
         LauncherAppState app = LauncherAppState.getInstance(this);
         mModel = app.getModel();

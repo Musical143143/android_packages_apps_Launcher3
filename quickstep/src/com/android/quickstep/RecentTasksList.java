@@ -45,7 +45,6 @@ import com.android.launcher3.util.window.WindowManagerProxy;
 import com.android.quickstep.util.DesktopTask;
 import com.android.quickstep.util.ExternalDisplaysKt;
 import com.android.quickstep.util.GroupTask;
-import com.android.quickstep.util.NTAppLockerHelper;
 import com.android.quickstep.util.SingleTask;
 import com.android.quickstep.util.SplitTask;
 import com.android.systemui.shared.recents.model.Task;
@@ -53,6 +52,8 @@ import com.android.wm.shell.Flags;
 import com.android.wm.shell.recents.IRecentTasksListener;
 import com.android.wm.shell.shared.GroupedTaskInfo;
 import com.android.wm.shell.shared.desktopmode.DesktopModeStatus;
+
+import com.android.internal.util.NTAppLockerHelper;
 
 import kotlin.collections.ArraysKt;
 import kotlin.collections.CollectionsKt;
@@ -482,7 +483,7 @@ public class RecentTasksList implements WindowManagerProxy.DesktopVisibilityList
     }
     
     private boolean isAppLocked(Task.TaskKey key, SparseBooleanArray users) {
-        return NTAppLockerHelper.Companion.get().isAppLocked(key.getPackageName())
+        return NTAppLockerHelper.get().isAppLocked(key.getPackageName())
             || users != null && users.get(key.userId);    
     }
 

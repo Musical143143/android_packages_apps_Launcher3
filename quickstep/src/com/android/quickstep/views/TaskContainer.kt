@@ -28,7 +28,6 @@ import com.android.launcher3.model.data.TaskViewItemInfo
 import com.android.launcher3.util.SplitConfigurationOptions
 import com.android.launcher3.util.TransformingTouchDelegate
 import com.android.quickstep.TaskOverlayFactory
-import com.android.quickstep.util.NTAppLockerHelper
 import com.android.quickstep.ViewUtils.addAccessibleChildToList
 import com.android.quickstep.recents.domain.usecase.ThumbnailPosition
 import com.android.quickstep.recents.ui.mapper.TaskUiStateMapper

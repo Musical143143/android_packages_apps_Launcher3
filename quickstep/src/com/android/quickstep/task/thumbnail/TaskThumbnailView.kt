@@ -42,7 +42,7 @@ import com.android.quickstep.task.thumbnail.TaskThumbnailUiState.LiveTile
 import com.android.quickstep.task.thumbnail.TaskThumbnailUiState.Snapshot
 import com.android.quickstep.task.thumbnail.TaskThumbnailUiState.SnapshotSplash
 import com.android.quickstep.task.thumbnail.TaskThumbnailUiState.Uninitialized
-import com.android.quickstep.util.NTAppLockerHelper
+import com.android.internal.util.NTAppLockerHelper
 import com.android.quickstep.views.FixedSizeImageView
 import com.android.quickstep.views.TaskThumbnailViewHeader
 import com.android.systemui.shared.recents.model.Task
@@ -159,7 +159,7 @@ class TaskThumbnailView : FrameLayout, ViewPool.Reusable {
 
     fun isTopAppLocked(): Boolean {
         val pkg = task?.key?.packageName ?: return false
-        val result = NTAppLockerHelper.get().isAppLockedWithoutCache(pkg)
+        val result = NTAppLockerHelper.get().isAppLocked(pkg)
         return result
     }
 

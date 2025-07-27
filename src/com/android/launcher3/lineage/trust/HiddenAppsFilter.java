@@ -28,7 +28,7 @@ public class HiddenAppsFilter extends AppFilter {
     public HiddenAppsFilter(Context context) {
         super(context);
 
-        mDbHelper = TrustDatabaseHelper.getInstance(context);
+        mDbHelper = TrustDatabaseHelper.getInstance();
     }
 
     @Override

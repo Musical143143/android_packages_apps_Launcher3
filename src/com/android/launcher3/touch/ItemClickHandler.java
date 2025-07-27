@@ -421,15 +421,7 @@ public class ItemClickHandler {
             FloatingIconView.fetchIcon(launcher, v, item, true /* isOpening */);
         }
 
-        TrustDatabaseHelper db = TrustDatabaseHelper.getInstance(launcher);
-        ComponentName cn = item.getTargetComponent();
-        boolean isProtected = cn != null && db.isPackageProtected(cn.getPackageName());
-
-        if (isProtected) {
-            launcher.startActivitySafelyAuth(v, intent, item);
-        } else {
-            launcher.startActivitySafely(v, intent, item);
-        }
+        launcher.startActivitySafely(v, intent, item);
     }
 
     /**
