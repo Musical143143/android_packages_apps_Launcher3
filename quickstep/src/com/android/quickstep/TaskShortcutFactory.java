@@ -288,6 +288,7 @@ public interface TaskShortcutFactory {
         private ActivityOptions makeLaunchOptions(RecentsViewContainer container) {
             ActivityOptions activityOptions = ActivityOptions.makeBasic();
             activityOptions.setLaunchWindowingMode(WINDOWING_MODE_FREEFORM);
+            activityOptions.setTaskAlwaysOnTop(true);
             // Arbitrary bounds only because freeform is in dev mode right now
             final View decorView = container.getWindow().getDecorView();
             final WindowInsets insets = decorView.getRootWindowInsets();
@@ -437,10 +438,7 @@ public interface TaskShortcutFactory {
         }
 
         private boolean isAvailable(RecentsViewContainer container) {
-            return Settings.Global.getInt(
-                    container.asContext().getContentResolver(),
-                    Settings.Global.DEVELOPMENT_ENABLE_FREEFORM_WINDOWS_SUPPORT, 0) != 0
-                    && !DesktopModeStatus.canEnterDesktopMode(container.asContext());
+            return !DesktopModeStatus.canEnterDesktopMode(container.asContext());
         }
     };
 
