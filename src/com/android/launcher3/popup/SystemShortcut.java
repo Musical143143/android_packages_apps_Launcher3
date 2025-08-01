@@ -148,6 +148,8 @@ public abstract class SystemShortcut<T extends ActivityContext> extends ItemInfo
     public static final Factory<ActivityContext> APP_INFO = AppInfo::new;
 
     public static class AppInfo<T extends ActivityContext> extends SystemShortcut<T> {
+    
+        public boolean mIsRecents;
 
         @Nullable
         private SplitAccessibilityInfo mSplitA11yInfo;
@@ -155,6 +157,7 @@ public abstract class SystemShortcut<T extends ActivityContext> extends ItemInfo
         public AppInfo(T target, ItemInfo itemInfo, @NonNull View originalView) {
             super(R.drawable.ic_info_no_shadow, R.string.app_info_drop_target_label, target,
                     itemInfo, originalView);
+            mIsRecents = false;
         }
 
         /**
@@ -172,6 +175,15 @@ public abstract class SystemShortcut<T extends ActivityContext> extends ItemInfo
             this(target, itemInfo, originalView);
             mSplitA11yInfo = accessibilityInfo;
             mAccessibilityActionId = accessibilityInfo.nodeId;
+            mIsRecents = false;
+        }
+
+        public AppInfo(T target, ItemInfo itemInfo, View originalView,
+                SplitAccessibilityInfo accessibilityInfo, boolean isRecents) {
+            this(target, itemInfo, originalView);
+            mSplitA11yInfo = accessibilityInfo;
+            mAccessibilityActionId = accessibilityInfo.nodeId;
+            mIsRecents = isRecents;
         }
 
         @Override
@@ -189,24 +201,36 @@ public abstract class SystemShortcut<T extends ActivityContext> extends ItemInfo
 
         @Override
         public void onClick(View view) {
-            InfoBottomSheet cbs;
             Rect sourceBounds = Utilities.getViewBounds(view);
             ActivityOptionsWrapper options = mTarget.getActivityLaunchOptions(view, mItemInfo);
-            // Dismiss the taskMenu when the app launch animation is complete
             options.onEndCallback.add(this::dismissTaskMenuView);
-            try {
-                cbs = (InfoBottomSheet) mTarget.getLayoutInflater().inflate(
-                        R.layout.app_info_bottom_sheet,
-                        mTarget.getDragLayer(),
-                        false);
-                cbs.configureBottomSheet(sourceBounds, view.getContext());
-                cbs.populateAndShow(mItemInfo);
-            } catch (InflateException e) {
-                PackageManagerHelper.startDetailsActivityForInfo(view.getContext(), mItemInfo,
-                        sourceBounds, options.toBundle());
+
+            Context context = view.getContext();
+            boolean launchedDetails = false;
+
+            if (!mIsRecents) {
+                try {
+                    InfoBottomSheet sheet = (InfoBottomSheet) mTarget.getLayoutInflater().inflate(
+                            R.layout.app_info_bottom_sheet,
+                            mTarget.getDragLayer(),
+                            false);
+                    sheet.configureBottomSheet(sourceBounds, context);
+                    sheet.populateAndShow(mItemInfo);
+                } catch (InflateException e) {
+                    launchedDetails = true;
+                }
+            } else {
+                launchedDetails = true;
             }
-            mTarget.getStatsLogManager().logger().withItemInfo(mItemInfo)
+
+            if (launchedDetails) {
+                PackageManagerHelper.startDetailsActivityForInfo(context, mItemInfo, sourceBounds, options.toBundle());
+            }
+
+            mTarget.getStatsLogManager().logger()
+                    .withItemInfo(mItemInfo)
                     .log(LAUNCHER_SYSTEM_SHORTCUT_APP_INFO_TAP);
+
             dismissTaskMenuView();
         }
 

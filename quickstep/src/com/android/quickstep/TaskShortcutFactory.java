@@ -123,7 +123,7 @@ public interface TaskShortcutFactory {
                             actionId
                     );
             return Collections.singletonList(new AppInfo(container, taskContainer.getItemInfo(),
-                    taskView, accessibilityInfo));
+                    taskView, accessibilityInfo, true));
         }
 
         @Override
