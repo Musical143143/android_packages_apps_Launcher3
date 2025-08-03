@@ -62,7 +62,7 @@ class RecentsDismissUtils(private val recentsView: RecentsView<*, *>) {
         val overshootLength = 100f
         val minVelocity =
             recentsView.pagedOrientationHandler.getSecondaryDimension(draggedTaskView).toFloat()
-        val startVelocity = abs(velocity).coerceAtLeast(minVelocity) * velocity.sign
+        val startVelocity = abs(velocity).coerceAtLeast(minVelocity) * velocity.sign * 1.4f
         // Animate dragged task towards dismissal or rest state.
         val draggedTaskViewSpringAnimation =
             SpringAnimation(draggedTaskView, taskDismissFloatProperty)
@@ -294,7 +294,7 @@ class RecentsDismissUtils(private val recentsView: RecentsView<*, *>) {
                     dampingRatioOffset
             )
             .setStiffness(
-                resourceProvider.getFloat(R.dimen.expressive_dismiss_task_trans_y_stiffness)
+                SpringForce.STIFFNESS_HIGH
             )
     }
 
