@@ -1815,6 +1815,7 @@ public class Launcher extends StatefulActivity<LauncherState>
         getRootView().getViewTreeObserver().removeOnPreDrawListener(mOnInitialBindListener);
         mOverlayManager.onActivityDestroyed();
         PillColorProvider.getInstance(mWorkspace.getContext()).unregisterObserver();
+        SettingsRepository.get().onDestroy(); //precaution
     }
 
     public LauncherAccessibilityDelegate getAccessibilityDelegate() {
