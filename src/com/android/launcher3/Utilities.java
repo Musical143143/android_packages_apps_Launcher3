@@ -157,6 +157,7 @@ public final class Utilities {
 
     public static final String KEY_ALLOW_WALLPAPER_ZOOMING = "pref_allow_wallpaper_zooming";
     public static final String KEY_SHOW_HOTSEAT_SEARCH= "pref_show_hotseat_search";
+    public static final String KEY_HOTSEAT_SEARCH_PROVIDER = "pref_hotseat_search_provider";
     
     public static final String GSA_PACKAGE = "com.google.android.googlequicksearchbox";
 
@@ -1015,7 +1016,12 @@ public final class Utilities {
     
     public static boolean isHotseatEnabled() {
         return SettingsRepository.get().getPrefs().getBoolean(KEY_SHOW_HOTSEAT_SEARCH, false)
-            && SettingsRepository.get().isPackageInstalled(GSA_PACKAGE) 
-            && SettingsRepository.get().isPackageEnabled(GSA_PACKAGE);
+            && SettingsRepository.get().isPackageInstalled(getHotseatProvider()) 
+            && SettingsRepository.get().isPackageEnabled(getHotseatProvider())
+            && !getHotseatProvider().equals("disabled");
+    }
+    
+    public static String getHotseatProvider() {
+        return SettingsRepository.get().getPrefs().getString(KEY_HOTSEAT_SEARCH_PROVIDER, "disabled");
     }
 }

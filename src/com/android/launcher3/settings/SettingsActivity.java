@@ -26,6 +26,7 @@ import static com.android.launcher3.InvariantDeviceProfile.TYPE_MULTI_DISPLAY;
 import static com.android.launcher3.InvariantDeviceProfile.TYPE_TABLET;
 import static com.android.launcher3.states.RotationHelper.ALLOW_ROTATION_PREFERENCE_KEY;
 
+import static com.android.launcher3.Utilities.KEY_HOTSEAT_SEARCH_PROVIDER;
 import static com.android.launcher3.Utilities.KEY_SHOW_HOTSEAT_SEARCH;
 
 import android.app.Activity;
@@ -241,7 +242,7 @@ public class SettingsActivity extends FragmentActivity
                 getActivity().setTitle(getPreferenceScreen().getTitle());
             }
             
-            SettingsRepository.get().addTunables(KEY_SHOW_HOTSEAT_SEARCH);
+            SettingsRepository.get().addTunables(KEY_SHOW_HOTSEAT_SEARCH, KEY_HOTSEAT_SEARCH_PROVIDER);
         }
 
         private boolean isKeyInPreferenceGroup(String targetKey, PreferenceGroup parent) {

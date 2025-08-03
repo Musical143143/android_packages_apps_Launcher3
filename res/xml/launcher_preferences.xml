@@ -111,6 +111,16 @@
         android:key="pref_show_hotseat_search"
         android:title="@string/pref_show_hotseat_search_title" />
 
+    <ListPreference
+        android:key="pref_hotseat_search_provider"
+        android:title="@string/pref_search_provider_title"
+        android:summary="@string/pref_search_provider_summary"
+        android:entries="@array/search_provider_labels"
+        android:entryValues="@array/search_provider_values"
+        android:defaultValue="disabled"
+        android:dependency="pref_show_hotseat_search"
+        launcher:iconSpaceReserved="false" />
+
     <SwitchPreferenceCompat
          android:key="pref_sleep_gesture"
          android:title="@string/pref_sleep_gesture_title"

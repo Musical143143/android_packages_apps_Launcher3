@@ -76,7 +76,8 @@ public class QsbContainerView extends FrameLayout implements SharedPreferences.O
     @WorkerThread
     @Nullable
     public static String getSearchWidgetPackageName(@NonNull Context context) {
-        return Utilities.GSA_PACKAGE;
+        String provider = Utilities.getHotseatProvider();
+        return !provider.equals("disabled") ? provider : Utilities.GSA_PACKAGE;
     }
 
     /**
