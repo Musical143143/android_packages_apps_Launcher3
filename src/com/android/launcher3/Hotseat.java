@@ -341,6 +341,10 @@ public class Hotseat extends CellLayout implements Insettable {
         int bottom = b - t - dp.getQsbOffsetY();
         int top = bottom - dp.hotseatQsbHeight;
         mQsb.layout(left, top, right, bottom);
+        if (!dp.isTablet) {
+            float qsbOffsetY = getResources().getDimension(R.dimen.qsb_translation_y);
+            mQsb.setTranslationY(qsbOffsetY);
+        }
     }
 
     /**
