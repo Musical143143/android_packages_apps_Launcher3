@@ -39,11 +39,11 @@
 
     <style name="LauncherTheme" parent="@style/DynamicColorsBaseLauncherTheme">
         <item name="android:textColorSecondary">#DE000000</item>
-        <item name="allAppsScrimColor">@color/materialColorSurfaceDim</item>
+        <item name="allAppsScrimColor">@color/nt_all_apps_scrim_color_nt_mono</item>
         <item name="allAppsScrimColorOverBlur">#33000000</item>
-        <item name="allappsHeaderProtectionColor">@color/materialColorSurfaceContainerHighest</item>
+        <item name="allappsHeaderProtectionColor">@color/nt_all_apps_header_protection_color</item>
         <item name="allAppsNavBarScrimColor">#66FFFFFF</item>
-        <item name="allAppsSearchTextColor">@color/widget_picker_search_text_color_light</item>
+        <item name="allAppsSearchTextColor">@color/nt_all_apps_empty_search_tip_text_color</item>
         <item name="popupColorPrimary">@color/popup_color_primary_light</item>
         <item name="popupColorSecondary">@color/popup_color_secondary_light</item>
         <item name="popupColorTertiary">@color/popup_color_tertiary_light</item>
@@ -63,8 +63,8 @@
         <item name="pageIndicatorDotColor">@color/page_indicator_dot_color_light</item>
         <item name="focusOutlineColor">@color/materialColorSecondaryFixed</item>
         <item name="focusInnerOutlineColor">@color/materialColorOnSecondaryFixedVariant</item>
-        <item name="folderPreviewColor">@color/folder_preview_light</item>
-        <item name="folderBackgroundColor">@color/folder_background_light</item>
+        <item name="folderPreviewColor">@color/nt_folder_background</item>
+        <item name="folderBackgroundColor">@color/nt_folder_background</item>
         <item name="folderIconBorderColor">?android:attr/colorPrimary</item>
         <item name="isFolderDarkText">true</item>
         <item name="folderTextColor">@color/folder_text_color_light</item>
@@ -116,11 +116,11 @@
         <item name="android:textColorHint">#A0FFFFFF</item>
         <item name="android:colorControlHighlight">#19FFFFFF</item>
         <item name="android:colorPrimary">#FF212121</item>
-        <item name="allAppsScrimColor">@color/materialColorSurfaceDim</item>
+        <item name="allAppsScrimColor">@color/nt_all_apps_scrim_color_nt_mono</item>
         <item name="allAppsScrimColorOverBlur">#52000000</item>
-        <item name="allappsHeaderProtectionColor">@color/materialColorSurfaceContainerLow</item>
+        <item name="allappsHeaderProtectionColor">@color/nt_all_apps_header_protection_color</item>
         <item name="allAppsNavBarScrimColor">#80000000</item>
-        <item name="allAppsSearchTextColor">@color/widget_picker_search_text_color_dark</item>
+        <item name="allAppsSearchTextColor">@color/nt_all_apps_empty_search_tip_text_color</item>
         <item name="popupColorPrimary">@color/popup_color_primary_dark</item>
         <item name="popupColorSecondary">@color/popup_color_secondary_dark</item>
         <item name="popupColorTertiary">@color/popup_color_tertiary_dark</item>
@@ -132,8 +132,8 @@
         <item name="notificationDotColor">@color/notification_dot_color_dark</item>
         <item name="widgetsTheme">@style/WidgetContainerTheme.Dark</item>
         <item name="pageIndicatorDotColor">@color/page_indicator_dot_color_dark</item>
-        <item name="folderPreviewColor">@color/folder_preview_dark</item>
-        <item name="folderBackgroundColor">@color/folder_background_dark</item>
+        <item name="folderPreviewColor">@color/nt_folder_background</item>
+        <item name="folderBackgroundColor">@color/nt_folder_background</item>
         <item name="folderIconBorderColor">?android:attr/colorPrimary</item>
         <item name="isFolderDarkText">false</item>
         <item name="folderTextColor">@color/folder_text_color_dark</item>
@@ -387,8 +387,13 @@
         <item name="android:stateListAnimator">@animator/all_apps_fastscroll_icon_anim</item>
         <item name="android:paddingLeft">@dimen/dynamic_grid_cell_padding_x</item>
         <item name="android:paddingRight">@dimen/dynamic_grid_cell_padding_x</item>
+        <item name="android:textColor">@color/nt_all_apps_label_color</item>
+        <item name="android:fontFamily">sans-serif</item>
     </style>
 
+    <style name="BaseIcon.Folder" parent="@style/BaseIcon">
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
 
     <!-- Icon displayed on the workspace -->
     <style name="BaseIcon.Workspace.Shadows" parent="BaseIcon">
@@ -499,5 +504,9 @@
         <item name="android:textColor">@color/materialColorOnSurface</item>
         <item name="android:fontFamily">google-sans-text-medium</item>
         <item name="android:ellipsize">end</item>
+    </style>
+    
+    <style name="NTCellStyleDefault" parent="@style/CellStyleDefault">
+        <item name="iconDrawablePadding">@dimen/grid_icon_drawable_padding</item>
     </style>
 </resources>

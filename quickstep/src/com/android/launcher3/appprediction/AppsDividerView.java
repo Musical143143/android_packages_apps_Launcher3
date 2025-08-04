@@ -90,6 +90,7 @@ public class AppsDividerView extends View implements FloatingHeaderRow {
 
         mAccessibilityManager = AccessibilityManager.getInstance(context);
         setShowAllAppsLabel(!ALL_APPS_VISITED_COUNT.hasReachedMax(context));
+        setVisibility(0);
     }
 
     public void setup(FloatingHeaderView parent, FloatingHeaderRow[] rows, boolean tabsHidden) {
@@ -151,29 +152,9 @@ public class AppsDividerView extends View implements FloatingHeaderRow {
 
         if (mDividerType != dividerType) {
             mDividerType = dividerType;
-            int topPadding;
-            int bottomPadding;
+            int topPadding = 0;
+            int bottomPadding = 0;
             setContentDescription(null);
-            switch (dividerType) {
-                case LINE:
-                    topPadding = 0;
-                    bottomPadding = getResources()
-                            .getDimensionPixelSize(R.dimen.all_apps_prediction_row_divider_height);
-                    mPaint.setColor(mStrokeColor);
-                    break;
-                case ALL_APPS_LABEL:
-                    topPadding = getAllAppsLabelLayout().getHeight() + getResources()
-                            .getDimensionPixelSize(R.dimen.all_apps_label_top_padding);
-                    bottomPadding = getResources()
-                            .getDimensionPixelSize(R.dimen.all_apps_label_bottom_padding);
-                    mPaint.setColor(mAllAppsLabelTextColor);
-                    setContentDescription(mAllAppsLabelLayout.getText());
-                    break;
-                case NONE:
-                default:
-                    topPadding = bottomPadding = 0;
-                    break;
-            }
             setPadding(getPaddingLeft(), topPadding, getPaddingRight(), bottomPadding);
             updateViewVisibility();
             invalidate();
@@ -242,6 +223,11 @@ public class AppsDividerView extends View implements FloatingHeaderRow {
         setTranslationY(scroll);
         mIsScrolledOut = isScrolledOut;
         updateViewVisibility();
+    }
+
+    @Override
+    public void setVisibility(int visibility) {
+        super.setVisibility(GONE);
     }
 
     @Override
