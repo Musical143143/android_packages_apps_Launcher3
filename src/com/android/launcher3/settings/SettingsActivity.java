@@ -241,8 +241,10 @@ public class SettingsActivity extends FragmentActivity
             if (getActivity() != null && !TextUtils.isEmpty(getPreferenceScreen().getTitle())) {
                 getActivity().setTitle(getPreferenceScreen().getTitle());
             }
-            
-            SettingsRepository.get().addTunables(KEY_SHOW_HOTSEAT_SEARCH, KEY_HOTSEAT_SEARCH_PROVIDER);
+
+            SettingsRepository repo = SettingsRepository.get();
+            repo.addTunables(KEY_SHOW_HOTSEAT_SEARCH, KEY_HOTSEAT_SEARCH_PROVIDER);
+            getLifecycle().addObserver(repo);
         }
 
         private boolean isKeyInPreferenceGroup(String targetKey, PreferenceGroup parent) {
@@ -388,8 +390,6 @@ public class SettingsActivity extends FragmentActivity
             if (mRestartOnResume) {
                 recreateActivityNow();
             }
-            
-            SettingsRepository.get().onResume();
         }
 
         @Override
@@ -399,19 +399,12 @@ public class SettingsActivity extends FragmentActivity
         }
 
         @Override
-        public void onPause() {
-            super.onPause();
-            SettingsRepository.get().onPause();
-        }
-
-        @Override
         public void onDestroy() {
             super.onDestroy();
             if (IS_DEBUG_DEVICE) {
                 SettingsCache.INSTANCE.get(getContext())
                         .unregister(Settings.Global.getUriFor(DEVELOPMENT_SETTINGS_ENABLED), this);
             }
-            SettingsRepository.get().removeAllTunables();
         }
 
         /**

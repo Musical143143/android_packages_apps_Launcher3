@@ -19,17 +19,16 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import android.widget.Toast
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.*
 import kotlinx.coroutines.*
-
 import com.android.internal.util.android.Utils
 
 class SettingsRepository private constructor(private val context: Context) :
-    SharedPreferences.OnSharedPreferenceChangeListener {
+    SharedPreferences.OnSharedPreferenceChangeListener,
+    DefaultLifecycleObserver {
 
     private var isListenerRegistered = false
-    private var isResumed = false
+    private val observedKeys = mutableSetOf<String>()
 
     private val _restartNeeded = MutableLiveData(false)
     val restartNeeded: LiveData<Boolean> get() = _restartNeeded
@@ -37,55 +36,43 @@ class SettingsRepository private constructor(private val context: Context) :
     private val job = SupervisorJob()
     private val coroutineScope = CoroutineScope(job + Dispatchers.Main)
 
-    private val observedKeys = mutableSetOf<String>()
-
     fun addTunables(vararg keys: String) {
-        val wasEmpty = observedKeys.isEmpty()
         observedKeys.addAll(keys)
         if (DEBUG) Log.d(TAG, "Added tunables: ${keys.toList()}")
-        if (wasEmpty && isResumed) {
-            registerListener()
-        }
     }
 
-    fun onResume() {
-        if (!isResumed) {
-            isResumed = true
-            if (observedKeys.isNotEmpty()) {
-                registerListener()
-            }
-            if (DEBUG) Log.d(TAG, "SettingsRepository resumed")
-        }
-    }
-
-    fun onPause() {
-        if (isResumed) {
-            isResumed = false
-            unregisterListener()
-            if (DEBUG) Log.d(TAG, "SettingsRepository paused")
-        }
-    }
-
-    fun removeAllTunables() {
-        observedKeys.clear()
+    fun cleanup() {
         unregisterListener()
-        if (DEBUG) Log.d(TAG, "Removed all tunables")
+        removeAllTunables()
+        if (DEBUG) Log.d(TAG, "SettingsRepository cleaned up")
+    }
+
+    override fun onResume(owner: LifecycleOwner) {
+        registerListener()
+        if (DEBUG) Log.d(TAG, "SettingsRepository lifecycle resumed")
+    }
+
+    override fun onPause(owner: LifecycleOwner) {
+        unregisterListener()
+        if (DEBUG) Log.d(TAG, "SettingsRepository lifecycle paused")
+    }
+
+    override fun onDestroy(owner: LifecycleOwner) {
+        cleanup()
+        if (DEBUG) Log.d(TAG, "SettingsRepository lifecycle destroyed")
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
         if (key == null) return
         if (DEBUG) Log.d(TAG, "Preference changed: $key")
         if (observedKeys.contains(key)) {
-            if (DEBUG) Log.d(TAG, "Key '$key' requires restart.")
             _restartNeeded.value = true
+            if (DEBUG) Log.d(TAG, "Key '$key' requires restart.")
         }
     }
 
     fun onUserReturnedHome() {
         if (_restartNeeded.value == true) {
-            // just a precaution. unregister is already done during activity onPause()
-            unregisterListener()
-            removeAllTunables()
             _restartNeeded.value = false
             coroutineScope.launch {
                 Toast.makeText(context, "Restarting launcher...", Toast.LENGTH_SHORT).show()
@@ -112,27 +99,25 @@ class SettingsRepository private constructor(private val context: Context) :
         }
     }
 
-    fun onDestroy() {
-        if (DEBUG) Log.d(TAG, "SettingsRepository destroyed")
-        unregisterListener()
-        removeAllTunables()
-        job.cancel()
+    private fun removeAllTunables() {
+        observedKeys.clear()
+        if (DEBUG) Log.d(TAG, "Removed all tunables")
     }
 
     fun forceRestart() {
         if (_restartNeeded.value != true) {
-            if (DEBUG) Log.d(TAG, "forceRestart() triggered")
             _restartNeeded.value = true
+            if (DEBUG) Log.d(TAG, "forceRestart() triggered")
         }
     }
-    
+
     fun getPrefs(): SharedPreferences = LauncherPrefs.getPrefs(context)
 
-    fun isPackageEnabled(pkg: String): Boolean { 
+    fun isPackageEnabled(pkg: String): Boolean {
         return Utils.isPackageEnabled(context, pkg)
     }
 
-    fun isPackageInstalled(pkg: String): Boolean { 
+    fun isPackageInstalled(pkg: String): Boolean {
         return Utils.isPackageInstalled(context, pkg)
     }
 
