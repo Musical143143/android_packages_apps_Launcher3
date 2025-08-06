@@ -438,7 +438,7 @@ public interface TaskShortcutFactory {
         }
 
         private boolean isAvailable(RecentsViewContainer container) {
-            return !DesktopModeStatus.canEnterDesktopMode(container.asContext());
+            return false;
         }
     };
 
