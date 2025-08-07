@@ -36,8 +36,6 @@ import static com.android.launcher3.util.LogConfig.SEARCH_LOGGING;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -78,12 +76,9 @@ public class AllAppsRecyclerView extends FastScrollRecyclerView {
     private final AllAppsFastScrollHelper mFastScrollHelper;
     private int mCumulativeVerticalScroll;
     private ConstraintLayout mLetterList;
+    private NTAllAppsRecyclerView mDrawingDelegate;
 
     protected AlphabeticalAppsList<?> mApps;
-
-    private final Paint mBgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final float mCornerRadius;
-    private boolean mDrawBackground = true;
 
     public AllAppsRecyclerView(Context context) {
         this(context, null);
@@ -102,11 +97,7 @@ public class AllAppsRecyclerView extends FastScrollRecyclerView {
         super(context, attrs, defStyleAttr);
         mNumAppsPerRow = LauncherAppState.getIDP(context).numColumns;
         mFastScrollHelper = new AllAppsFastScrollHelper(this);
-        Resources res = context.getResources();
-        int bgColorResId = R.color.nt_all_apps_content_background_color;
-        mBgPaint.setColor(context.getColor(bgColorResId));
-        mCornerRadius = res.getDimension(R.dimen.all_apps_bg_corner_radius);
-        setWillNotDraw(false);
+        mDrawingDelegate = new NTAllAppsRecyclerView(context, this);
     }
 
     /**
@@ -147,16 +138,11 @@ public class AllAppsRecyclerView extends FastScrollRecyclerView {
     }
 
     @Override
-    public void setPadding(int left, int top, int right, int bottom) {
-        Resources res = getResources();
-        int extraPaddingHorizontal = res.getDimensionPixelSize(R.dimen.all_apps_padding_horizontal);
-        int extraPaddingTop = res.getDimensionPixelSize(R.dimen.all_apps_padding_top);
-        int extraPaddingBottom = res.getDimensionPixelSize(R.dimen.all_apps_padding_bottom);
-        int newLeft = left + extraPaddingHorizontal;
-        int newRight = right + extraPaddingHorizontal;
-        int newTop = top + extraPaddingTop;
-        int newBottom = bottom + extraPaddingBottom;
-        super.setPadding(newLeft, newTop, newRight, newBottom);
+    protected void dispatchDraw(Canvas canvas) {
+        mDrawingDelegate.onDispatchDraw(canvas);
+        mDrawingDelegate.clipCanvas(canvas, () -> {
+            super.dispatchDraw(canvas);
+        });
     }
 
     @Override
@@ -172,18 +158,17 @@ public class AllAppsRecyclerView extends FastScrollRecyclerView {
     }
 
     @Override
-    protected void dispatchDraw(Canvas canvas) {
-        if (mDrawBackground && getChildCount() > 0) {
-            float left = getPaddingLeft();
-            float top = getPaddingTop();
-            float right = getWidth() - getPaddingRight();
-            float bottom = getHeight() - getPaddingBottom();
-            canvas.drawRoundRect(
-                    new RectF(left, top, right, bottom),
-                    mCornerRadius, mCornerRadius, mBgPaint
-            );
-        }
-        super.dispatchDraw(canvas);
+    public void setPadding(int left, int top, int right, int bottom) {
+        Resources res = getResources();
+        int extraPaddingHorizontal = res.getDimensionPixelSize(R.dimen.all_apps_padding_horizontal);
+        int extraPaddingTop = res.getDimensionPixelSize(R.dimen.all_apps_padding_top);
+        int extraPaddingBottom = res.getDimensionPixelSize(R.dimen.all_apps_padding_bottom);
+        int searchInset = res.getDimensionPixelSize(R.dimen.search_bar_height);
+        int newLeft = left + extraPaddingHorizontal;
+        int newRight = right + extraPaddingHorizontal;
+        int newTop = top + extraPaddingTop;
+        int newBottom = bottom + extraPaddingBottom + searchInset;
+        super.setPadding(newLeft, newTop, newRight, newBottom);
     }
 
     @Override
@@ -221,8 +206,6 @@ public class AllAppsRecyclerView extends FastScrollRecyclerView {
     public void onScrolled(int dx, int dy) {
         super.onScrolled(dx, dy);
         mCumulativeVerticalScroll += dy;
-        mDrawBackground = getChildCount() > 0 && computeVerticalScrollExtent() > 0;
-        invalidate();
     }
 
     /**
@@ -362,8 +345,9 @@ public class AllAppsRecyclerView extends FastScrollRecyclerView {
 
     @Override
     public int getScrollBarMarginBottom() {
-        return getRootWindowInsets() == null ? 0
-                : getRootWindowInsets().getSystemWindowInsetBottom();
+        return (getRootWindowInsets() == null ? 0
+                : getRootWindowInsets().getSystemWindowInsetBottom()) 
+                + getResources().getDimensionPixelOffset(R.dimen.search_bar_height);
     }
 
     @Override

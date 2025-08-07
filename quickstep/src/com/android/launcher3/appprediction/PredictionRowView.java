@@ -80,6 +80,7 @@ public class PredictionRowView<T extends Context & ActivityContext>
     private final Paint mBgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final float mCornerRadius;
     private boolean mDrawBackground = true;
+    private int mCurrentBgColor = 0;
 
     public PredictionRowView(@NonNull Context context) {
         this(context, null);
@@ -98,7 +99,6 @@ public class PredictionRowView<T extends Context & ActivityContext>
                 R.dimen.all_apps_predicted_icon_vertical_padding);
                 
         setWillNotDraw(false);
-        mBgPaint.setColor(getContext().getColor(R.color.nt_all_apps_content_background_color));
         mCornerRadius = getResources().getDimension(R.dimen.all_apps_bg_corner_radius);
         setPadding(0,0,0,0);
         updateVisibility();
@@ -152,15 +152,30 @@ public class PredictionRowView<T extends Context & ActivityContext>
             float top = getPaddingTop();
             float right = getWidth() - getPaddingRight();
             float bottom = getHeight() - getPaddingBottom();
-
             canvas.drawRoundRect(
                     new RectF(left, top, right, bottom),
-                    mCornerRadius, mCornerRadius, mBgPaint
+                    mCornerRadius, mCornerRadius, getPaint()
             );
         }
-
         mFocusHelper.draw(canvas);
         super.dispatchDraw(canvas);
+    }
+    
+    private Paint getPaint() {
+        updatePaintIfNeeded();
+        return mBgPaint;
+    }
+
+    private void updatePaintIfNeeded() {
+        int colorRes = com.android.launcher3.graphics.ThemeManager.INSTANCE
+                .get(getContext()).isMonoThemeEnabled()
+                ? R.color.nt_all_apps_content_background_color
+                : R.color.color_all_apps_content_background_color;
+        int newColor = getContext().getColor(colorRes);
+        if (newColor != mCurrentBgColor) {
+            mCurrentBgColor = newColor;
+            mBgPaint.setColor(newColor);
+        }
     }
 
     @Override

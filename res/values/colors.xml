@@ -306,10 +306,14 @@
     <color name="recent_app_locked_icon_color">@android:color/system_neutral2_700</color>
     <color name="primaryBackground">#ffffffff</color>
     <color name="primaryForeground">#ff000000</color>
-    <color name="nt_all_apps_content_background_color">@android:color/system_neutral1_50</color>
+    <color name="nt_all_apps_content_background_color">@android:color/system_neutral1_0</color>
     <color name="nt_all_apps_empty_search_tip_text_color">@android:color/system_neutral1_700</color>
-    <color name="nt_all_apps_header_protection_color">@android:color/system_neutral1_0</color>
+    <color name="nt_all_apps_header_protection_color">#E3E2E1</color>
     <color name="nt_all_apps_label_color">@android:color/system_neutral1_900</color>
-    <color name="nt_all_apps_scrim_color_nt_mono">@android:color/system_neutral1_100</color>
+    <color name="nt_all_apps_scrim_color">@android:color/system_neutral1_200</color>
+    <color name="nt_all_apps_scrim_color_nt_mono">@android:color/system_neutral1_50</color>
+    <color name="all_apps_search_icon_color">@android:color/system_neutral1_900</color>
     <color name="all_apps_search_text_color">@android:color/system_neutral1_900</color>
+    <color name="all_apps_search_tint_color">#ff06080a</color>
+    <color name="color_all_apps_content_background_color">@android:color/system_neutral1_50</color>
 </resources>

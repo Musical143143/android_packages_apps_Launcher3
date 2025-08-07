@@ -207,6 +207,10 @@ public class AllAppsState extends LauncherState {
     @Override
     public int getWorkspaceScrimColor(Launcher launcher) {
         if (!launcher.getDeviceProfile().shouldShowAllAppsOnSheet()) {
+            if (!com.android.launcher3.graphics.ThemeManager.INSTANCE
+                    .get(launcher).isMonoThemeEnabled()) {
+                return launcher.getResources().getColor(R.color.nt_all_apps_scrim_color);
+            }
             return Themes.getAttrColor(launcher, R.attr.allAppsScrimColor);
         }
         if (Flags.allAppsBlur()) {

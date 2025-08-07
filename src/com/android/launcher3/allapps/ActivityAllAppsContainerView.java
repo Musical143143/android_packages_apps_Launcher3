@@ -82,6 +82,7 @@ import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem;
 import com.android.launcher3.allapps.search.AllAppsSearchUiDelegate;
+import com.android.launcher3.allapps.search.NTAppsSearchContainerLayout;
 import com.android.launcher3.allapps.search.SearchAdapterProvider;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.keyboard.FocusedItemDecorator;
@@ -152,7 +153,6 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
                 }
             };
     private final Paint mNavBarScrimPaint;
-    private final int mHeaderProtectionColor;
     private final int mPrivateSpaceBottomExtraSpace;
     private final Path mTmpPath = new Path();
     private final RectF mTmpRectF = new RectF();
@@ -162,6 +162,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
     protected View mBottomSheetBackground;
     protected RecyclerViewFastScroller mFastScroller;
     private ConstraintLayout mFastScrollLetterLayout;
+    private FloatingSearchBarManager mSearchBarManager;
 
     /**
      * View that defines the search box. Result is rendered inside {@link #mSearchRecyclerView}.
@@ -205,7 +206,6 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         mScrimColor = Themes.getAttrColor(context, R.attr.allAppsScrimColor);
         mHeaderThreshold = getResources().getDimensionPixelSize(
                 R.dimen.dynamic_grid_cell_border_spacing);
-        mHeaderProtectionColor = Themes.getAttrColor(context, R.attr.allappsHeaderProtectionColor);
 
         mWorkManager = new WorkProfileManager(
                 mActivityContext.getSystemService(UserManager.class),
@@ -337,19 +337,6 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         mBottomSheetBackgroundAlpha = Color.alpha(mBottomSheetBackgroundColor) / 255.0f;
         updateBackgroundVisibility(mActivityContext.getDeviceProfile());
         mSearchUiManager.initializeSearch(this);
-        ViewCompat.setOnApplyWindowInsetsListener(this, (v, insets) -> {
-            boolean imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime());
-            Insets imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime());
-            int[] location = new int[2];
-            mSearchContainer.getLocationOnScreen(location);
-            int containerBottom = location[1] + mSearchContainer.getHeight();
-            int screenHeight = getRootView().getHeight();
-            int keyboardTop = screenHeight - imeInsets.bottom;
-            int neededOffset = Math.max(0, containerBottom - keyboardTop);
-            float targetTranslationY = imeVisible ? -neededOffset : 0f;
-            mSearchContainer.setTranslationY(targetTranslationY);
-            return insets;
-        });
     }
 
     @Override
@@ -363,12 +350,19 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
             mSearchUiDelegate.onInitializeSearchBar();
         }
         mActivityContext.addOnDeviceProfileChangeListener(this);
+        mSearchBarManager = new FloatingSearchBarManager(
+            this,
+            (NTAppsSearchContainerLayout) mSearchContainer,
+            mSearchUiManager.getEditText()
+        );
+        mSearchBarManager.bind();
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         mActivityContext.removeOnDeviceProfileChangeListener(this);
+        mSearchBarManager.dispose();
     }
 
     public SearchUiManager getSearchUiManager() {
@@ -844,9 +838,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
     }
 
     protected int getHeaderColor(float blendRatio) {
-        return ColorUtils.setAlphaComponent(
-                ColorUtils.blendARGB(mScrimColor, mHeaderProtectionColor, blendRatio),
-                (int) (mSearchContainer.getAlpha() * 255));
+        return Color.TRANSPARENT;
     }
 
     /**
@@ -1662,9 +1654,12 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
                     topOffset += getResources().getDimensionPixelSize(
                             R.dimen.all_apps_padding_top);
                 }
-                bottomOffset += mSearchContainer.getHeight() / 2;
-                mRecyclerView.setPadding(mPadding.left, mPadding.top + topOffset, mPadding.right,
-                        mPadding.bottom + bottomOffset);
+                mRecyclerView.setPadding(
+                        mPadding.left,
+                        mPadding.top + topOffset,
+                        mPadding.right,
+                        mPadding.bottom + bottomOffset
+                );
             }
         }
 

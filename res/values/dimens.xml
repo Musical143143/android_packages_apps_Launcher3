@@ -593,8 +593,16 @@
     <dimen name="all_apps_padding_horizontal">12dp</dimen>
     <dimen name="all_apps_padding_top">6dp</dimen>
     <dimen name="all_apps_padding_bottom">16dp</dimen>
-    <dimen name="search_bar_height">56dp</dimen>
+    <dimen name="search_bar_height">58dp</dimen>
     <dimen name="grid_icon_drawable_padding">10.5px</dimen>
     <dimen name="nt_all_apps_icon_drawable_padding">6dp</dimen>
     <dimen name="expanded_search_padding">4dp</dimen>
+    <dimen name="nt_search_bar_touch_width">80dp</dimen>
+    <dimen name="nt_search_bar_margin_bottom">2dp</dimen>
+    <dimen name="nt_search_container_all_apps_bg_radius">56dp</dimen>
+    <dimen name="nt_all_apps_search_container_padding_left">4dp</dimen>
+    <dimen name="all_apps_search_icon_height">48dp</dimen>
+    <dimen name="all_apps_search_search_text_line_height">24sp</dimen>
+    <dimen name="all_apps_search_search_text_size">20sp</dimen>
+    <dimen name="nt_ic_background_borderless_radius">24dp</dimen>
 </resources>
