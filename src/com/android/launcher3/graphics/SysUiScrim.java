@@ -105,14 +105,12 @@ public class SysUiScrim implements View.OnAttachStateChangeListener,
 
         mTopMaskHeight = ResourceUtils.pxFromDp(TOP_MASK_HEIGHT_DP, dm);
         mBottomMaskHeight = ResourceUtils.pxFromDp(BOTTOM_MASK_HEIGHT_DP, dm);
-        SharedPreferences prefs = LauncherPrefs.getPrefs(view.getContext());
-        mHideSysUiScrim = !prefs.getBoolean(KEY_SHOW_TOP_SHADOW, true);
+        mHideSysUiScrim = !LauncherPrefs.getPrefs(view.getContext()).getBoolean(KEY_SHOW_TOP_SHADOW, true);
         createMaskBitmaps();
 
         if (!mHideSysUiScrim) {
             view.addOnAttachStateChangeListener(this);
         }
-        prefs.registerOnSharedPreferenceChangeListener(this);
     }
 
     /**
@@ -175,11 +173,13 @@ public class SysUiScrim implements View.OnAttachStateChangeListener,
     @Override
     public void onViewAttachedToWindow(View view) {
         ScreenOnTracker.INSTANCE.get(mContainer.asContext()).addListener(mScreenOnListener);
+        LauncherPrefs.getPrefs(view.getContext()).registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     public void onViewDetachedFromWindow(View view) {
         ScreenOnTracker.INSTANCE.get(mContainer.asContext()).removeListener(mScreenOnListener);
+        LauncherPrefs.getPrefs(view.getContext()).unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
