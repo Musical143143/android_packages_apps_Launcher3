@@ -26,10 +26,6 @@ class NTAllAppsRecyclerView(private val ctx: Context, private val rv: AllAppsRec
     val themeManager: ThemeManager get() = ThemeManager.INSTANCE.get(ctx)
     val rad: Int = ctx.resources.getDimensionPixelSize(R.dimen.all_apps_bg_corner_radius)
     val scrollOffset: Int get() = rv.computeVerticalScrollOffset()
-    val maxScroll: Int get() = rv.computeVerticalScrollRange()
-    val scrollExtent: Int get() = rv.computeVerticalScrollExtent()
-    val currentScroll: Int get() = (scrollOffset + scrollExtent)
-    val maxScrollReached: Boolean get() = currentScroll >= maxScroll
     val Int.f: Float get() = this.toFloat()
     val bgColorRes: Int get() = if (themeManager.isMonoThemeEnabled) {
         R.color.nt_all_apps_content_background_color 
@@ -58,14 +54,10 @@ class NTAllAppsRecyclerView(private val ctx: Context, private val rv: AllAppsRec
     }
 
     fun clipCanvas(canvas: Canvas, onDispatchDraw: Runnable) {
-        var didSomething = false
-        if (maxScrollReached) {
-            canvas.save()
-            clipBottomPath(canvas)
-            didSomething = true
-        }
+        canvas.save()
+        clipBottomPath(canvas)
         onDispatchDraw.run()
-        if (didSomething) canvas.restore()
+        canvas.restore()
     }
 
     private fun clipBottomPath(canvas: Canvas) {
