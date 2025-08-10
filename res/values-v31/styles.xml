@@ -19,20 +19,6 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="HomeSettings.Theme" parent="@android:style/Theme.DeviceDefault.Settings">
-        <item name="android:listPreferredItemPaddingEnd">16dp</item>
-        <item name="android:listPreferredItemPaddingStart">24dp</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:switchStyle">@style/SwitchStyle</item>
-        <item name="android:textAppearanceListItem">@style/HomeSettings.PreferenceTitle</item>
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="preferenceTheme">@style/HomeSettings.PreferenceTheme</item>
-        <item name="android:fontFamily">@*android:string/config_bodyFontFamily</item>
-        <item name="alertDialogTheme">@style/HomeSettings.AlertDialog</item>
-    </style>
-
     <style name="HomeSettings.PreferenceTheme" parent="@style/PreferenceThemeOverlay">
         <item name="preferenceCategoryStyle">@style/HomeSettings.CategoryStyle</item>
         <item name="preferenceCategoryTitleTextAppearance">@style/HomeSettings.CategoryTitle</item>
