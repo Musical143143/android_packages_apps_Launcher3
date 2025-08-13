@@ -48,7 +48,7 @@
             android:maxLines="1"
             android:scrollHorizontally="true"
             android:singleLine="true"
-            android:hint="@string/all_apps_search_bar_hint"
+            android:hint="@null"
             android:inputType="textNoSuggestions"
             android:imeOptions="actionSearch"
             android:fontFamily="sans-serif"
