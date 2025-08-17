@@ -130,33 +130,48 @@ public class QsbContainerView extends FrameLayout implements SharedPreferences.O
     // We need to store the orientation here, due to a bug (b/64916689) that results in widgets
     // being inflated in the wrong orientation.i
     private int mOrientation;
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent == null) return;
+
             String action = intent.getAction();
-            if (!(ACTION_PACKAGE_ADDED.equals(action) || ACTION_PACKAGE_CHANGED.equals(action)
-                || ACTION_PACKAGE_REMOVED.equals(action)))
+            if (!(Intent.ACTION_PACKAGE_ADDED.equals(action) ||
+                  Intent.ACTION_PACKAGE_CHANGED.equals(action) ||
+                  Intent.ACTION_PACKAGE_REMOVED.equals(action))) {
                 return;
-            String pkgName = intent.getData().getSchemeSpecificPart();
+            }
+
+            String pkgName = intent.getData() != null
+                    ? intent.getData().getSchemeSpecificPart()
+                    : null;
+            if (pkgName == null) return;
+
             String searchPackage = getSearchWidgetPackageName(context);
-            if ((mWidgetInfo != null && mWidgetInfo.provider.getPackageName().equals(pkgName))
-                || (pkgName != null && pkgName.equals(searchPackage))) {
+
+            if (!pkgName.equals(searchPackage)) {
+                return;
+            }
+
+            if (mWidgetInfo != null &&
+                mWidgetInfo.provider.getPackageName().equals(pkgName)) {
                 rebindFragment();
             }
+
             SharedPreferences prefs = LauncherPrefs.getPrefs(context);
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-            java.util.List<AppWidgetProviderInfo> providers = appWidgetManager.getInstalledProvidersForPackage(searchPackage, null);
-            if (providers == null || providers.isEmpty()) {
+            java.util.List<AppWidgetProviderInfo> providers =
+                    appWidgetManager.getInstalledProvidersForPackage(searchPackage, null);
+
+            boolean hasProviders = providers != null && !providers.isEmpty();
+            boolean wasDisabled = prefs.getBoolean(PREF_SEARCH_DISABLED_FLAG, false);
+
+            if (!hasProviders) {
                 prefs.edit().putBoolean(PREF_SEARCH_DISABLED_FLAG, true).apply();
                 SettingsRepository.get().forceRestart();
-            }
-            boolean wasDisabled = prefs.getBoolean(PREF_SEARCH_DISABLED_FLAG, false);
-            if (providers != null && !providers.isEmpty()) {
-                if (wasDisabled) {
-                    prefs.edit().remove(PREF_SEARCH_DISABLED_FLAG).apply();
-                    SettingsRepository.get().forceRestart();
-                }
+            } else if (wasDisabled) {
+                prefs.edit().remove(PREF_SEARCH_DISABLED_FLAG).apply();
+                SettingsRepository.get().forceRestart();
             }
         }
     };
