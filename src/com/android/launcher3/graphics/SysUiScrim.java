@@ -97,6 +97,8 @@ public class SysUiScrim implements View.OnAttachStateChangeListener,
     private boolean mAnimateScrimOnNextDraw = false;
     private final AnimatedFloat mSysUiAnimMultiplier = new AnimatedFloat(this::reapplySysUiAlpha);
     private final AnimatedFloat mSysUiProgress = new AnimatedFloat(this::reapplySysUiAlpha);
+    
+    private boolean mListening = false;
 
     public SysUiScrim(View view) {
         mRoot = view;
@@ -106,40 +108,36 @@ public class SysUiScrim implements View.OnAttachStateChangeListener,
         mTopMaskHeight = ResourceUtils.pxFromDp(TOP_MASK_HEIGHT_DP, dm);
         mBottomMaskHeight = ResourceUtils.pxFromDp(BOTTOM_MASK_HEIGHT_DP, dm);
         mHideSysUiScrim = !LauncherPrefs.getPrefs(view.getContext()).getBoolean(KEY_SHOW_TOP_SHADOW, true);
+        
+        view.addOnAttachStateChangeListener(this);
+        
         createMaskBitmaps();
-
-        if (!mHideSysUiScrim) {
-            view.addOnAttachStateChangeListener(this);
-        }
     }
 
     /**
      * Draw the top and bottom scrims
      */
     public void draw(Canvas canvas) {
-        if (!mHideSysUiScrim) {
-            if (mSysUiProgress.value <= 0) {
-                mAnimateScrimOnNextDraw = false;
-                return;
-            }
+        if (mHideSysUiScrim || mSysUiProgress.value <= 0) {
+            mAnimateScrimOnNextDraw = false;
+            return;
+        }
 
-            if (mAnimateScrimOnNextDraw) {
-                mSysUiAnimMultiplier.value = 0;
-                reapplySysUiAlphaNoInvalidate();
+        if (mAnimateScrimOnNextDraw) {
+            mSysUiAnimMultiplier.value = 0;
+            reapplySysUiAlphaNoInvalidate();
+            ObjectAnimator oa = mSysUiAnimMultiplier.animateToValue(1);
+            oa.setDuration(600);
+            oa.setStartDelay(mContainer.getWindow().getTransitionBackgroundFadeDuration());
+            oa.start();
+            mAnimateScrimOnNextDraw = false;
+        }
 
-                ObjectAnimator oa = mSysUiAnimMultiplier.animateToValue(1);
-                oa.setDuration(600);
-                oa.setStartDelay(mContainer.getWindow().getTransitionBackgroundFadeDuration());
-                oa.start();
-                mAnimateScrimOnNextDraw = false;
-            }
-
-            if (mDrawTopScrim) {
-                canvas.drawBitmap(mTopMaskBitmap, null, mTopMaskRect, mTopMaskPaint);
-            }
-            if (mDrawBottomScrim) {
-                canvas.drawBitmap(mBottomMaskBitmap, null, mBottomMaskRect, mBottomMaskPaint);
-            }
+        if (mDrawTopScrim) {
+            canvas.drawBitmap(mTopMaskBitmap, null, mTopMaskRect, mTopMaskPaint);
+        }
+        if (mDrawBottomScrim) {
+            canvas.drawBitmap(mBottomMaskBitmap, null, mBottomMaskRect, mBottomMaskPaint);
         }
     }
 
@@ -172,31 +170,61 @@ public class SysUiScrim implements View.OnAttachStateChangeListener,
 
     @Override
     public void onViewAttachedToWindow(View view) {
-        ScreenOnTracker.INSTANCE.get(mContainer.asContext()).addListener(mScreenOnListener);
         LauncherPrefs.getPrefs(view.getContext()).registerOnSharedPreferenceChangeListener(this);
+        updateScreenOnTracker();
     }
 
     @Override
     public void onViewDetachedFromWindow(View view) {
-        ScreenOnTracker.INSTANCE.get(mContainer.asContext()).removeListener(mScreenOnListener);
         LauncherPrefs.getPrefs(view.getContext()).unregisterOnSharedPreferenceChangeListener(this);
+        stopListening();
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-        if (key.equals(KEY_SHOW_TOP_SHADOW)) {
-            mHideSysUiScrim = !prefs.getBoolean(KEY_SHOW_TOP_SHADOW, true);
-            createMaskBitmaps();
-            mRoot.invalidate();
+        if (!KEY_SHOW_TOP_SHADOW.equals(key)) return;
+        mHideSysUiScrim = !prefs.getBoolean(KEY_SHOW_TOP_SHADOW, true);
+        createMaskBitmaps();
+        mRoot.invalidate();
+        updateScreenOnTracker();
+    }
+
+    private void updateScreenOnTracker() {
+        if (mRoot.isAttachedToWindow() && !mHideSysUiScrim) {
+            startListening();
+        } else {
+            stopListening();
+        }
+    }
+
+    private void startListening() {
+        if (!mListening) {
+            ScreenOnTracker.INSTANCE.get(mContainer.asContext()).addListener(mScreenOnListener);
+            mListening = true;
+        }
+    }
+
+    private void stopListening() {
+        if (mListening) {
+            ScreenOnTracker.INSTANCE.get(mContainer.asContext()).removeListener(mScreenOnListener);
+            mListening = false;
         }
     }
 
     private void createMaskBitmaps() {
-        mTopMaskBitmap = mHideSysUiScrim ? null : createDitheredAlphaMask(mTopMaskHeight,
+        if (mHideSysUiScrim) {
+            mTopMaskBitmap = mBottomMaskBitmap = null;
+            return;
+        }
+
+        mTopMaskBitmap = createDitheredAlphaMask(
+                mTopMaskHeight,
                 new int[]{0x3DFFFFFF, 0x0AFFFFFF, 0x00FFFFFF},
                 new float[]{0f, 0.7f, 1f});
         mTopMaskPaint.setColor(0xFF222222);
-        mBottomMaskBitmap = mHideSysUiScrim ? null : createDitheredAlphaMask(mBottomMaskHeight,
+
+        mBottomMaskBitmap = createDitheredAlphaMask(
+                mBottomMaskHeight,
                 new int[]{0x00FFFFFF, 0x2FFFFFFF},
                 new float[]{0f, 1f});
     }
