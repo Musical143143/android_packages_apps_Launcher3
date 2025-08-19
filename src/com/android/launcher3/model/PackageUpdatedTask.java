@@ -42,7 +42,6 @@ import com.android.launcher3.LauncherModel.ModelUpdateTask;
 import com.android.launcher3.LauncherSettings.Favorites;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.icons.IconCache;
-import com.android.launcher3.lineage.trust.db.TrustDatabaseHelper;
 import com.android.launcher3.logging.FileLog;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.LauncherAppWidgetInfo;
@@ -160,9 +159,6 @@ public class PackageUpdatedTask implements ModelUpdateTask {
             case OP_REMOVE: {
                 for (int i = 0; i < packageCount; i++) {
                     iconCache.removeIconsForPkg(packages[i], mUser);
-                    TrustDatabaseHelper dpHelper = TrustDatabaseHelper.getInstance();
-                    dpHelper.removeProtectedApp(packages[i]);
-                    dpHelper.removeHiddenApp(packages[i]);
                 }
                 // Fall through
             }
