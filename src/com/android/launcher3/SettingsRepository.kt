@@ -19,12 +19,22 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.*
-import kotlinx.coroutines.*
 import com.android.internal.util.android.Utils
+import com.android.launcher3.dagger.ApplicationContext
+import com.android.launcher3.dagger.LauncherAppComponent
+import com.android.launcher3.dagger.LauncherAppSingleton
+import com.android.launcher3.util.DaggerSingletonObject
+import com.android.launcher3.util.DaggerSingletonTracker
+import kotlinx.coroutines.*
+import javax.inject.Inject
 
-class SettingsRepository private constructor(private val context: Context) :
-    SharedPreferences.OnSharedPreferenceChangeListener,
+@LauncherAppSingleton
+class SettingsRepository @Inject constructor(
+    @ApplicationContext private val context: Context,
+    tracker: DaggerSingletonTracker
+) : SharedPreferences.OnSharedPreferenceChangeListener,
     DefaultLifecycleObserver {
 
     private var isListenerRegistered = false
@@ -36,30 +46,25 @@ class SettingsRepository private constructor(private val context: Context) :
     private val job = SupervisorJob()
     private val coroutineScope = CoroutineScope(job + Dispatchers.Main)
 
+    init {
+        tracker.addCloseable {
+            cleanup()
+        }
+    }
+
     fun addTunables(vararg keys: String) {
         observedKeys.addAll(keys)
         if (DEBUG) Log.d(TAG, "Added tunables: ${keys.toList()}")
     }
 
-    fun cleanup() {
-        unregisterListener()
-        removeAllTunables()
-        if (DEBUG) Log.d(TAG, "SettingsRepository cleaned up")
-    }
-
     override fun onResume(owner: LifecycleOwner) {
         registerListener()
-        if (DEBUG) Log.d(TAG, "SettingsRepository lifecycle resumed")
+        if (DEBUG) Log.d(TAG, "SettingsRepository resumed")
     }
 
     override fun onPause(owner: LifecycleOwner) {
         unregisterListener()
-        if (DEBUG) Log.d(TAG, "SettingsRepository lifecycle paused")
-    }
-
-    override fun onDestroy(owner: LifecycleOwner) {
-        cleanup()
-        if (DEBUG) Log.d(TAG, "SettingsRepository lifecycle destroyed")
+        if (DEBUG) Log.d(TAG, "SettingsRepository paused")
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
@@ -77,11 +82,26 @@ class SettingsRepository private constructor(private val context: Context) :
             coroutineScope.launch {
                 Toast.makeText(context, "Restarting launcher...", Toast.LENGTH_SHORT).show()
                 delay(1250)
-                job.cancel()
+                cleanup()
                 System.exit(0)
             }
         }
     }
+
+    fun forceRestart() {
+        if (_restartNeeded.value != true) {
+            _restartNeeded.value = true
+            if (DEBUG) Log.d(TAG, "forceRestart() triggered")
+        }
+    }
+
+    fun getPrefs(): SharedPreferences = LauncherPrefs.getPrefs(context)
+
+    fun isPackageEnabled(pkg: String): Boolean =
+        Utils.isPackageEnabled(context, pkg)
+
+    fun isPackageInstalled(pkg: String): Boolean =
+        Utils.isPackageInstalled(context, pkg)
 
     private fun registerListener() {
         if (!isListenerRegistered) {
@@ -104,44 +124,22 @@ class SettingsRepository private constructor(private val context: Context) :
         if (DEBUG) Log.d(TAG, "Removed all tunables")
     }
 
-    fun forceRestart() {
-        if (_restartNeeded.value != true) {
-            _restartNeeded.value = true
-            if (DEBUG) Log.d(TAG, "forceRestart() triggered")
-        }
-    }
-
-    fun getPrefs(): SharedPreferences = LauncherPrefs.getPrefs(context)
-
-    fun isPackageEnabled(pkg: String): Boolean {
-        return Utils.isPackageEnabled(context, pkg)
-    }
-
-    fun isPackageInstalled(pkg: String): Boolean {
-        return Utils.isPackageInstalled(context, pkg)
+    private fun cleanup() {
+        unregisterListener()
+        removeAllTunables()
+        job.cancel()
+        if (DEBUG) Log.d(TAG, "SettingsRepository cleaned up")
     }
 
     companion object {
+        @VisibleForTesting
+        @JvmField
+        val INSTANCE = DaggerSingletonObject(LauncherAppComponent::getSettingsRepository)
+
+        @JvmStatic
+        fun get(context: Context): SettingsRepository = INSTANCE.get(context)
+
         private const val TAG = "SettingsRepository"
         private const val DEBUG = false
-
-        @Volatile
-        private var instance: SettingsRepository? = null
-
-        @JvmStatic
-        fun init(context: Context) {
-            if (instance == null) {
-                synchronized(this) {
-                    if (instance == null) {
-                        instance = SettingsRepository(context.applicationContext)
-                    }
-                }
-            }
-        }
-
-        @JvmStatic
-        fun get(): SettingsRepository {
-            return instance ?: throw IllegalStateException("SettingsRepository is not initialized.")
-        }
     }
 }

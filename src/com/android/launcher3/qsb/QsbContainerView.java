@@ -76,7 +76,7 @@ public class QsbContainerView extends FrameLayout implements SharedPreferences.O
     @WorkerThread
     @Nullable
     public static String getSearchWidgetPackageName(@NonNull Context context) {
-        String provider = Utilities.getHotseatProvider();
+        String provider = Utilities.getHotseatProvider(context);
         return !provider.equals("disabled") ? provider : Utilities.GSA_PACKAGE;
     }
 
@@ -168,10 +168,10 @@ public class QsbContainerView extends FrameLayout implements SharedPreferences.O
 
             if (!hasProviders) {
                 prefs.edit().putBoolean(PREF_SEARCH_DISABLED_FLAG, true).apply();
-                SettingsRepository.get().forceRestart();
+                SettingsRepository.INSTANCE.get(context).forceRestart();
             } else if (wasDisabled) {
                 prefs.edit().remove(PREF_SEARCH_DISABLED_FLAG).apply();
-                SettingsRepository.get().forceRestart();
+                SettingsRepository.INSTANCE.get(context).forceRestart();
             }
         }
     };
@@ -318,7 +318,7 @@ public class QsbContainerView extends FrameLayout implements SharedPreferences.O
     }
 
     public boolean isQsbEnabled() {
-        return Utilities.isHotseatEnabled();
+        return Utilities.isHotseatEnabled(getContext());
     }
 
     protected Bundle createBindOptions() {

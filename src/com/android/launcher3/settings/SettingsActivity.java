@@ -252,7 +252,7 @@ public class SettingsActivity extends FragmentActivity
                 getActivity().setTitle(getPreferenceScreen().getTitle());
             }
 
-            SettingsRepository repo = SettingsRepository.get();
+            SettingsRepository repo = SettingsRepository.INSTANCE.get(getContext());
             repo.addTunables(KEY_SHOW_HOTSEAT_SEARCH, KEY_HOTSEAT_SEARCH_PROVIDER);
             getLifecycle().addObserver(repo);
         }

@@ -32,6 +32,7 @@ import com.android.launcher3.model.LoaderCursor.LoaderCursorFactory;
 import com.android.launcher3.model.WidgetsFilterDataProvider;
 import com.android.launcher3.pm.InstallSessionHelper;
 import com.android.launcher3.pm.UserCache;
+import com.android.launcher3.SettingsRepository;
 import com.android.launcher3.util.ApiWrapper;
 import com.android.launcher3.util.DaggerSingletonTracker;
 import com.android.launcher3.util.DisplayController;
@@ -92,6 +93,8 @@ public interface LauncherBaseAppComponent {
     LoaderCursorFactory getLoaderCursorFactory();
     WidgetHolderFactory getWidgetHolderFactory();
     RefreshRateTracker getFrameRateProvider();
+    
+    SettingsRepository getSettingsRepository();
 
     /** Builder for LauncherBaseAppComponent. */
     interface Builder {

@@ -615,7 +615,7 @@ public class DeviceProfile {
 
         workspaceCellPaddingXPx = res.getDimensionPixelSize(R.dimen.dynamic_grid_cell_padding_x);
 
-        final boolean hotseatEnabled = Utilities.isHotseatEnabled();
+        final boolean hotseatEnabled = Utilities.isHotseatEnabled(context);
         hotseatQsbHeight = hotseatEnabled
             ? res.getDimensionPixelSize(R.dimen.qsb_widget_height)
             : 0;

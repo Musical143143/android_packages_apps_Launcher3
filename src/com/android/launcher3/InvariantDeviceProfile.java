@@ -278,7 +278,6 @@ public class InvariantDeviceProfile {
         mThemeManager = themeManager;
 
         String gridName = prefs.get(GRID_NAME);
-        SettingsRepository.init(context);
         initGrid(context, gridName);
 
         dc.setPriorityListener(

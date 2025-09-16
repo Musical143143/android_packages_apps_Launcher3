@@ -1014,14 +1014,16 @@ public final class Utilities {
         return prefs.getBoolean(KEY_ALLOW_WALLPAPER_ZOOMING, true);
     }
     
-    public static boolean isHotseatEnabled() {
-        return SettingsRepository.get().getPrefs().getBoolean(KEY_SHOW_HOTSEAT_SEARCH, false)
-            && SettingsRepository.get().isPackageInstalled(getHotseatProvider()) 
-            && SettingsRepository.get().isPackageEnabled(getHotseatProvider())
-            && !getHotseatProvider().equals("disabled");
+    public static boolean isHotseatEnabled(Context context) {
+        String hotseatProvider = getHotseatProvider(context);
+        SettingsRepository repo = SettingsRepository.INSTANCE.get(context);
+        return repo.getPrefs().getBoolean(KEY_SHOW_HOTSEAT_SEARCH, false)
+            && repo.isPackageInstalled(hotseatProvider) 
+            && repo.isPackageEnabled(hotseatProvider)
+            && !hotseatProvider.equals("disabled");
     }
     
-    public static String getHotseatProvider() {
-        return SettingsRepository.get().getPrefs().getString(KEY_HOTSEAT_SEARCH_PROVIDER, "disabled");
+    public static String getHotseatProvider(Context context) {
+        return SettingsRepository.INSTANCE.get(context).getPrefs().getString(KEY_HOTSEAT_SEARCH_PROVIDER, "disabled");
     }
 }
