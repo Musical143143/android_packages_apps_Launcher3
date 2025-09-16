@@ -591,7 +591,8 @@
     
     <dimen name="all_apps_bg_corner_radius">53px</dimen>
     <dimen name="all_apps_padding_horizontal">12dp</dimen>
-    <dimen name="all_apps_padding_top">6dp</dimen>
+    <dimen name="all_apps_padding_bg_top_offset">12dp</dimen>
+    <dimen name="all_apps_padding_top">18dp</dimen>
     <dimen name="all_apps_padding_bottom">16dp</dimen>
     <dimen name="search_bar_height">58dp</dimen>
     <dimen name="grid_icon_drawable_padding">10.5px</dimen>

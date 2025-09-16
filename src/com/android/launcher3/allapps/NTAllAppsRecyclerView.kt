@@ -25,6 +25,7 @@ class NTAllAppsRecyclerView(private val ctx: Context, private val rv: AllAppsRec
 
     val themeManager: ThemeManager get() = ThemeManager.INSTANCE.get(ctx)
     val rad: Int = ctx.resources.getDimensionPixelSize(R.dimen.all_apps_bg_corner_radius)
+    val topOffset: Int = ctx.resources.getDimensionPixelSize(R.dimen.all_apps_padding_bg_top_offset)
     val scrollOffset: Int get() = rv.computeVerticalScrollOffset()
     val Int.f: Float get() = this.toFloat()
     val bgColorRes: Int get() = if (themeManager.isMonoThemeEnabled) {
@@ -37,7 +38,7 @@ class NTAllAppsRecyclerView(private val ctx: Context, private val rv: AllAppsRec
         color = bgColor
     }
     val appDrawerSize: Int get() = rv.height + scrollOffset - (rv.paddingBottom / 2)
-    val backgroundSizes: List<Rect> get() = listOf(Rect(rv.paddingLeft, rv.paddingTop, rv.width - rv.paddingRight, appDrawerSize))
+    val backgroundSizes: List<Rect> get() = listOf(Rect(rv.paddingLeft, rv.paddingTop - topOffset, rv.width - rv.paddingRight, appDrawerSize))
 
     fun onDispatchDraw(canvas: Canvas) {
         canvas.save()
