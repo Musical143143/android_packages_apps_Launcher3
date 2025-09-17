@@ -267,15 +267,15 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         // As a special case for some languages (currently only Simplified Chinese), we may need to
         // coalesce sections
         if (mSortSections) {
-            List<AppInfo> sorted = appSteam.sorted(mAppNameComparator).collect(Collectors.toList());
-            sorted.sort((a, b) -> {
-                int sectionCompare = new LabelComparator().compare(a.sectionName, b.sectionName);
-                if (sectionCompare != 0) return sectionCompare;
-                return mAppNameComparator.compare(a, b);
-            });
-            appSteam = sorted.stream();
-        } else {
-            appSteam = appSteam.sorted(mAppNameComparator);
+            // Compute the section headers. We use a TreeMap with the section name comparator to
+            // ensure that the sections are ordered when we iterate over it later
+            appSteam = appSteam.collect(Collectors.groupingBy(
+                    info -> info.sectionName,
+                    () -> new TreeMap<>(new LabelComparator()),
+                    Collectors.toCollection(ArrayList::new)))
+                    .values()
+                    .stream()
+                    .flatMap(list -> list.stream().sorted(mAppNameComparator));
         }
 
         appSteam.forEachOrdered(mApps::add);
