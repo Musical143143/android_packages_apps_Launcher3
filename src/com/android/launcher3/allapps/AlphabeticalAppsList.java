@@ -255,18 +255,14 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
                         .filter(mPrivateProviderManager.getItemInfoMatcher());
             }
         }
-
-        if (mSortSections) {
-            List<AppInfo> sorted = privateAppStream.collect(Collectors.toList());
-            sorted.sort((a, b) -> {
-                int sectionCompare = new LabelComparator().compare(a.sectionName, b.sectionName);
-                if (sectionCompare != 0) return sectionCompare;
-                return mAppNameComparator.compare(a, b);
-            });
-            privateAppStream = sorted.stream();
-        } else {
-            privateAppStream = privateAppStream.sorted(mAppNameComparator);
-        }
+        appSteam = appSteam.sorted(mAppNameComparator);
+        privateAppStream = privateAppStream.collect(Collectors.groupingBy(
+                info -> info.sectionName,
+                () -> new TreeMap<>(new LabelComparator()),
+                Collectors.toCollection(ArrayList::new)))
+                .values()
+                .stream()
+                .flatMap(list -> list.stream().sorted(mAppNameComparator));
 
         // As a special case for some languages (currently only Simplified Chinese), we may need to
         // coalesce sections
