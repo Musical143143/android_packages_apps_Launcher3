@@ -2828,7 +2828,6 @@ public class Launcher extends StatefulActivity<LauncherState>
 
     /** Pauses view updates that should not be run during the app launch animation. */
     public void pauseExpensiveViewUpdates() {
-        AxCpuBindController.get().acquireAppOpenBoost();
         // Pause page indicator animations as they lead to layer trashing.
         getWorkspace().getPageIndicator().pauseAnimations();
 
@@ -2842,7 +2841,6 @@ public class Launcher extends StatefulActivity<LauncherState>
 
     /** Resumes view updates at the end of the app launch animation. */
     public void resumeExpensiveViewUpdates() {
-        getWorkspace().getPageIndicator().skipAnimationsToEnd();
 
         getWorkspace().mapOverItems((info, view) -> {
             if (view instanceof LauncherAppWidgetHostView) {
