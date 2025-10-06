@@ -14,13 +14,11 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<ripple android:color="?android:attr/colorControlHighlight"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<ripple xmlns:android="http://schemas.android.com/apk/res/android" android:color="#80FFFFFF">
     <item>
-        <shape android:shape="rectangle"
-            android:tint="?colorButtonNormal">
-            <corners android:radius="@dimen/recents_clear_all_outline_radius" />
-            <solid android:color="@color/materialColorSurfaceBright"/>
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/overview_actions_button_radius"/>
+            <solid android:color="#80000000"/>
         </shape>
     </item>
 </ripple>

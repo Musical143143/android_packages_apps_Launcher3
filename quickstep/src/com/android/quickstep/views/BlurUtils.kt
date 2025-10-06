@@ -18,6 +18,7 @@ package com.android.quickstep.views
 
 import com.android.launcher3.Flags.enableOverviewBackgroundWallpaperBlur
 import com.android.quickstep.RemoteTargetGluer.RemoteTargetHandle
+import com.android.systemui.shared.system.BlurUtils
 
 /** Applies blur either behind launcher surface or live tile app. */
 class BlurUtils(private val recentsView: RecentsView<*, *>) {
@@ -42,7 +43,7 @@ class BlurUtils(private val recentsView: RecentsView<*, *>) {
         remoteTargetHandles: Array<RemoteTargetHandle>? = null,
     ) {
         remoteTargetHandles?.forEach { it.taskViewSimulator.setDrawsBelowRecents(drawBelowRecents) }
-        if (enableOverviewBackgroundWallpaperBlur()) {
+        if (BlurUtils.supportsBlursOnWindows()) {
             recentsView.depthController?.setBaseSurfaceOverride(
                 // Blurs behind launcher layer.
                 if (!drawBelowRecents || remoteTargetHandles == null) {

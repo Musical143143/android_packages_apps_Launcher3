@@ -950,10 +950,11 @@ public abstract class RecentsView<
                 R.dimen.transient_taskbar_clamped_offset_bound);
 
         mEmptyIcon = context.getDrawable(R.drawable.ic_empty_recents);
+        mEmptyIcon.setTint(Color.WHITE);
         mEmptyIcon.setCallback(this);
         mEmptyMessage = context.getText(R.string.recents_empty_message);
         mEmptyMessagePaint = new TextPaint();
-        mEmptyMessagePaint.setColor(Themes.getAttrColor(context, android.R.attr.textColorPrimary));
+        mEmptyMessagePaint.setColor(Color.WHITE);
         mEmptyMessagePaint.setTextSize(getResources()
                 .getDimension(R.dimen.recents_empty_message_text_size));
         Typeface typeface = Typeface.create(
@@ -6184,7 +6185,7 @@ public abstract class RecentsView<
         mRecentsAnimationController = null;
         mSplitSelectStateController.setRecentsAnimationRunning(false);
         executeSideTaskLaunchCallback();
-        if (enableOverviewBackgroundWallpaperBlur()) {
+        if (com.android.systemui.shared.system.BlurUtils.supportsBlursOnWindows()) {
             mBlurUtils.setDrawLiveTileBelowRecents(false);
         }
     }

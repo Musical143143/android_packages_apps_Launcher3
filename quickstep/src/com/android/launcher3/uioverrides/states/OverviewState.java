@@ -160,7 +160,7 @@ public class OverviewState extends LauncherState {
 
     @Override
     public int getWorkspaceScrimColor(Launcher launcher) {
-        return enableOverviewBackgroundWallpaperBlur() && BlurUtils.supportsBlursOnWindows()
+        return BlurUtils.supportsBlursOnWindows()
                 ? Themes.getAttrColor(launcher, R.attr.overviewScrimColorOverBlur)
                 : Themes.getAttrColor(launcher, R.attr.overviewScrimColor);
     }

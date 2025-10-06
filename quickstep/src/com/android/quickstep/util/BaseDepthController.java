@@ -110,11 +110,11 @@ public class BaseDepthController {
 
     public BaseDepthController(Launcher activity) {
         mLauncher = activity;
-        if (Flags.allAppsBlur()) {
+        if (BlurUtils.supportsBlursOnWindows()) {
             mMaxBlurRadius = activity.getResources().getDimensionPixelSize(
                     R.dimen.max_depth_blur_radius_enhanced);
         } else {
-            mMaxBlurRadius = activity.getResources().getInteger(R.integer.max_depth_blur_radius);
+            mMaxBlurRadius = 0;
         }
         mWallpaperManager = activity.getSystemService(WallpaperManager.class);
 
@@ -122,7 +122,7 @@ public class BaseDepthController {
                 new MultiPropertyFactory<>(this, DEPTH, DEPTH_INDEX_COUNT, Float::max);
         stateDepth = depthProperty.get(DEPTH_INDEX_STATE_TRANSITION);
         widgetDepth = depthProperty.get(DEPTH_INDEX_WIDGET);
-        if (enableOverviewBackgroundWallpaperBlur()) {
+        if (BlurUtils.supportsBlursOnWindows()) {
             mBlurSurface = new SurfaceControl.Builder()
                     .setName("Overview Blur")
                     .setHidden(false)
@@ -192,7 +192,7 @@ public class BaseDepthController {
                 ? 0 : (int) (blurAmount * mMaxBlurRadius);
 
         SurfaceControl.Transaction transaction = new SurfaceControl.Transaction();
-        if (enableOverviewBackgroundWallpaperBlur() && mBlurSurface != null) {
+        if (BlurUtils.supportsBlursOnWindows() && mBlurSurface != null) {
             // Reparent to launcher for full screen blur.
             transaction.setBackgroundBlurRadius(mBlurSurface, mCurrentBlur)
                     .reparent(mBlurSurface, mBaseSurface);
