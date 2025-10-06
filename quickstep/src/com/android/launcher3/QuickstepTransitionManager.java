@@ -1156,7 +1156,7 @@ public class QuickstepTransitionManager implements OnDeviceProfileChangeListener
         // When launching an app from overview that doesn't map to a task, we still want to just
         // blur the wallpaper instead of the launcher surface as well
         boolean allowBlurringLauncher = mLauncher.getStateManager().getState() != OVERVIEW
-                && BlurUtils.supportsBlursOnWindows();
+                && Utilities.blurEnabled(mLauncher);
 
         LaunchDepthController depthController = new LaunchDepthController(mLauncher);
         ObjectAnimator backgroundRadiusAnim = ObjectAnimator.ofFloat(depthController.stateDepth,

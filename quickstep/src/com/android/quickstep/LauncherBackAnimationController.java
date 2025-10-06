@@ -73,7 +73,6 @@ import com.android.launcher3.widget.LauncherAppWidgetHostView;
 import com.android.quickstep.util.BackAnimState;
 import com.android.quickstep.util.ScalingWorkspaceRevealAnim;
 import com.android.systemui.shared.system.QuickStepContract;
-import com.android.systemui.shared.system.BlurUtils;
 
 import java.lang.ref.WeakReference;
 
@@ -366,7 +365,7 @@ public class LauncherBackAnimationController {
                 && !mLauncher.isInState(LauncherState.ALL_APPS)) {
             Animations.cancelOngoingAnimation(mLauncher.getWorkspace());
             Animations.cancelOngoingAnimation(mLauncher.getHotseat());
-            if (BlurUtils.supportsBlursOnWindows()) {
+            if (Utilities.blurEnabled(mLauncher)) {
                 mLauncher.getDepthController().pauseBlursOnWindows(true);
             }
             mLauncher.getDepthController().stateDepth.setValue(
@@ -474,7 +473,7 @@ public class LauncherBackAnimationController {
     }
 
     private void setBlur(int blurRadius) {
-        if (BlurUtils.supportsBlursOnWindows()) {
+        if (Utilities.blurEnabled(mLauncher)) {
             mTransaction.setBackgroundBlurRadius(mScrimLayer, blurRadius);
         }
     }
@@ -586,7 +585,7 @@ public class LauncherBackAnimationController {
         if (mScrimLayer != null) {
             removeScrimLayer();
         }
-        if (Flags.predictiveBackToHomePolish() && BlurUtils.supportsBlursOnWindows()
+        if (Flags.predictiveBackToHomePolish() && Utilities.blurEnabled(mLauncher)
                 && !mLauncher.getWorkspace().isOverlayShown()
                 && !mLauncher.isInState(LauncherState.ALL_APPS)) {
             mLauncher.getDepthController().pauseBlursOnWindows(false);

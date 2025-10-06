@@ -22,6 +22,7 @@ import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
 import static com.android.launcher3.AbstractFloatingView.TYPE_ALL;
 import static com.android.launcher3.AbstractFloatingView.TYPE_REBIND_SAFE;
 import static com.android.launcher3.LauncherState.ALL_APPS;
+import static com.android.launcher3.Utilities.blurEnabled;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -43,7 +44,6 @@ import com.android.launcher3.Flags;
 import com.android.launcher3.R;
 import com.android.launcher3.taskbar.TaskbarActivityContext;
 import com.android.launcher3.taskbar.TaskbarControllers;
-import com.android.systemui.shared.system.BlurUtils;
 import com.android.systemui.shared.system.TaskStackChangeListener;
 import com.android.systemui.shared.system.TaskStackChangeListeners;
 
@@ -222,14 +222,14 @@ public final class TaskbarOverlayController {
         if (!Flags.allAppsBlur()) {
             return;
         }
-        if (!BlurUtils.supportsBlursOnWindows()) {
-            Log.d(TAG, "setBackgroundBlurRadius: not supported, setting to 0");
-            radius = 0;
-            // intentionally falling through in case a non-0 blur was previously set.
-        }
         if (mOverlayContext == null) {
             Log.w(TAG, "setBackgroundBlurRadius: no overlay context");
             return;
+        }
+        if (!blurEnabled(mOverlayContext)) {
+            Log.d(TAG, "setBackgroundBlurRadius: not supported, setting to 0");
+            radius = 0;
+            // intentionally falling through in case a non-0 blur was previously set.
         }
         TaskbarOverlayDragLayer dragLayer = mOverlayContext.getDragLayer();
         if (dragLayer == null) {

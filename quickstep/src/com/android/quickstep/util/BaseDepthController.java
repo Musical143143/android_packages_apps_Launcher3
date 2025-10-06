@@ -33,7 +33,6 @@ import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.util.MultiPropertyFactory;
 import com.android.launcher3.util.MultiPropertyFactory.MultiProperty;
-import com.android.systemui.shared.system.BlurUtils;
 
 /**
  * Utility class for applying depth effect
@@ -107,10 +106,13 @@ public class BaseDepthController {
     protected boolean mWaitingOnSurfaceValidity;
 
     private SurfaceControl mBlurSurface = null;
+    
+    private boolean mBlurEnabled;
 
     public BaseDepthController(Launcher activity) {
         mLauncher = activity;
-        if (BlurUtils.supportsBlursOnWindows()) {
+        mBlurEnabled = Utilities.blurEnabled(mLauncher);
+        if (mBlurEnabled) {
             mMaxBlurRadius = activity.getResources().getDimensionPixelSize(
                     R.dimen.max_depth_blur_radius_enhanced);
         } else {
@@ -122,7 +124,7 @@ public class BaseDepthController {
                 new MultiPropertyFactory<>(this, DEPTH, DEPTH_INDEX_COUNT, Float::max);
         stateDepth = depthProperty.get(DEPTH_INDEX_STATE_TRANSITION);
         widgetDepth = depthProperty.get(DEPTH_INDEX_WIDGET);
-        if (BlurUtils.supportsBlursOnWindows()) {
+        if (mBlurEnabled) {
             mBlurSurface = new SurfaceControl.Builder()
                     .setName("Overview Blur")
                     .setHidden(false)
@@ -165,7 +167,7 @@ public class BaseDepthController {
             }
         }
 
-        if (!BlurUtils.supportsBlursOnWindows()) {
+        if (!mBlurEnabled) {
             return;
         }
         if (mBaseSurface == null) {
@@ -192,7 +194,7 @@ public class BaseDepthController {
                 ? 0 : (int) (blurAmount * mMaxBlurRadius);
 
         SurfaceControl.Transaction transaction = new SurfaceControl.Transaction();
-        if (BlurUtils.supportsBlursOnWindows() && mBlurSurface != null) {
+        if (mBlurEnabled && mBlurSurface != null) {
             // Reparent to launcher for full screen blur.
             transaction.setBackgroundBlurRadius(mBlurSurface, mCurrentBlur)
                     .reparent(mBlurSurface, mBaseSurface);

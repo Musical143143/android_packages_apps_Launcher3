@@ -41,4 +41,7 @@
     
     <!-- Preference default value -->
     <string name="pref_value_default">Default</string>
+    
+    <!-- Blur -->
+    <string name="blur_enabled_title">Enable blur</string>
 </resources>

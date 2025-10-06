@@ -253,7 +253,7 @@ public class SettingsActivity extends FragmentActivity
             }
 
             SettingsRepository repo = SettingsRepository.INSTANCE.get(getContext());
-            repo.addTunables(KEY_SHOW_HOTSEAT_SEARCH, KEY_HOTSEAT_SEARCH_PROVIDER);
+            repo.addTunables(KEY_SHOW_HOTSEAT_SEARCH, KEY_HOTSEAT_SEARCH_PROVIDER, "blur_enabled");
             getLifecycle().addObserver(repo);
         }
 

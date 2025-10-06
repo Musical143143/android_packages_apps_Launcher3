@@ -98,6 +98,7 @@ import com.android.launcher3.util.SplitConfigurationOptions.SplitPositionOption;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.BaseDragLayer;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
+import com.android.systemui.shared.system.BlurUtils;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -1025,5 +1026,10 @@ public final class Utilities {
     
     public static String getHotseatProvider(Context context) {
         return SettingsRepository.INSTANCE.get(context).getPrefs().getString(KEY_HOTSEAT_SEARCH_PROVIDER, "disabled");
+    }
+    
+    public static boolean blurEnabled(Context context) {
+        SharedPreferences prefs = LauncherPrefs.getPrefs(context.getApplicationContext());
+        return BlurUtils.supportsBlursOnWindows() && prefs.getBoolean("blur_enabled", false);
     }
 }

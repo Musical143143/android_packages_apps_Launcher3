@@ -6185,7 +6185,7 @@ public abstract class RecentsView<
         mRecentsAnimationController = null;
         mSplitSelectStateController.setRecentsAnimationRunning(false);
         executeSideTaskLaunchCallback();
-        if (com.android.systemui.shared.system.BlurUtils.supportsBlursOnWindows()) {
+        if (Utilities.blurEnabled(getContext())) {
             mBlurUtils.setDrawLiveTileBelowRecents(false);
         }
     }
