@@ -217,54 +217,13 @@ public interface TaskShortcutFactory {
             if (options == null) {
                 return;
             }
-            final Task.TaskKey taskKey = mTaskContainer.getTask().key;
-            final int taskId = taskKey.id;
+            final String pkg = mTaskContainer.getTask().getKey().getPackageName();
             options.setSplashScreenStyle(SplashScreen.SPLASH_SCREEN_STYLE_ICON);
-            if (ActivityManagerWrapper.getInstance().startActivityFromRecents(taskId,
-                    options)) {
-                final Runnable animStartedListener = () -> {
-                    // Hide the task view and wait for the window to be resized
-                    // TODO: Consider animating in launcher and do an in-place start activity
-                    //       afterwards
-                    mRecentsView.setIgnoreResetTask(taskId);
-                    mTaskView.setAlpha(0f);
-                };
-
-                final int[] position = new int[2];
-                View snapShotView = mTaskContainer.getSnapshotView();
-                snapShotView.getLocationOnScreen(position);
-                final int width = (int) (snapShotView.getWidth() * mTaskView.getScaleX());
-                final int height = (int) (snapShotView.getHeight() * mTaskView.getScaleY());
-                final Rect taskBounds = new Rect(position[0], position[1],
-                        position[0] + width, position[1] + height);
-
-                // Take the thumbnail of the task without a scrim and apply it back after
-                Bitmap thumbnail;
-                if (enableRefactorTaskThumbnail()) {
-                    thumbnail = mTaskContainer.getThumbnail();
-                } else {
-                    float alpha = mTaskContainer.getThumbnailViewDeprecated().getDimAlpha();
-                    mTaskContainer.getThumbnailViewDeprecated().setDimAlpha(0);
-                    thumbnail = RecentsTransition.drawViewIntoHardwareBitmap(
-                            taskBounds.width(), taskBounds.height(), snapShotView, 1f, Color.BLACK);
-                    mTaskContainer.getThumbnailViewDeprecated().setDimAlpha(alpha);
-                }
-
-                AppTransitionAnimationSpecsFuture future =
-                        new AppTransitionAnimationSpecsFuture(mHandler) {
-                            @Override
-                            public List<AppTransitionAnimationSpecCompat> composeSpecs() {
-                                return Collections.singletonList(
-                                        new AppTransitionAnimationSpecCompat(
-                                                taskId, thumbnail, taskBounds));
-                            }
-                        };
-                overridePendingAppTransitionMultiThumbFuture(
-                        future, animStartedListener, mHandler, true /* scaleUp */,
-                        taskKey.displayId);
-                mTarget.getStatsLogManager().logger().withItemInfo(mTaskContainer.getItemInfo())
-                            .log(mLauncherEvent);
-            }
+            options.setTaskAlwaysOnTop(true);
+            mTaskView.getContext().startActivity(mTaskView.getContext()
+                    .getPackageManager()
+                    .getLaunchIntentForPackage(pkg), 
+                     options.toBundle());
         }
 
         /**
@@ -288,7 +247,6 @@ public interface TaskShortcutFactory {
         private ActivityOptions makeLaunchOptions(RecentsViewContainer container) {
             ActivityOptions activityOptions = ActivityOptions.makeBasic();
             activityOptions.setLaunchWindowingMode(WINDOWING_MODE_FREEFORM);
-            activityOptions.setTaskAlwaysOnTop(true);
             // Arbitrary bounds only because freeform is in dev mode right now
             final View decorView = container.getWindow().getDecorView();
             final WindowInsets insets = decorView.getRootWindowInsets();
@@ -438,7 +396,7 @@ public interface TaskShortcutFactory {
         }
 
         private boolean isAvailable(RecentsViewContainer container) {
-            return false;
+            return true;
         }
     };
 
