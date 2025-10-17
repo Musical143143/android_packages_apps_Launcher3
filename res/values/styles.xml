@@ -176,6 +176,9 @@
     <style name="HomeSettings.Theme" parent="Theme.SubSettingsBase.Expressive">
         <!-- For AndroidX AlertDialog - legacy for expressive fix -->
         <item name="alertDialogTheme">@style/Theme.AlertDialog.SettingsLib</item>
+         <!-- Legacy switch -->
+        <item name="android:switchStyle">@style/SwitchStyle</item>
+        <item name="preferenceTheme">@style/HomeSettings.PreferenceTheme</item>
     </style>
 
     <style name="HomeSettings.PreferenceTheme" parent="@style/PreferenceThemeOverlay.v14.Material">
