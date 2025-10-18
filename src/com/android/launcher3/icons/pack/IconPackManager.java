@@ -9,6 +9,8 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Handler;
+import android.os.UserHandle;
+import android.provider.Settings;
 import android.util.Log;
 
 import static com.android.launcher3.util.Executors.MODEL_EXECUTOR;
@@ -140,6 +142,28 @@ public class IconPackManager extends BroadcastReceiver {
             Log.e(TAG, "Resetting global icon pack because provider " + global + " was removed");
             IconDatabase.resetGlobal(mContext);
         }
+        
+        saveProviders();
+    }
+
+
+    private void saveProviders() {
+        Set<String> packageNames = mProviders.keySet();
+        StringBuilder sb = new StringBuilder();
+        for (String pkg : packageNames) {
+            sb.append(pkg).append(",");
+        }
+        if (sb.length() > 0) {
+            sb.setLength(sb.length() - 1);
+        }
+
+        Settings.Secure.putStringForUser(
+                mContext.getContentResolver(),
+                "icon_pack_providers",
+                sb.toString(),
+                UserHandle.USER_CURRENT
+        );
+        Log.d(TAG, "Saved icon pack providers to settings: " + sb.toString());
     }
 
     public Map<String, CharSequence> getProviderNames() {

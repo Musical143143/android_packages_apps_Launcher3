@@ -43,11 +43,13 @@ import com.android.launcher3.InvariantDeviceProfile.GridOption;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherModel;
 import com.android.launcher3.LauncherPrefs;
+import com.android.launcher3.customization.IconDatabase;
 import com.android.launcher3.dagger.ApplicationContext;
 import com.android.launcher3.dagger.LauncherAppSingleton;
 import com.android.launcher3.model.BgDataModel;
 import com.android.launcher3.shapes.IconShapeModel;
 import com.android.launcher3.shapes.ShapesProvider;
+import com.android.launcher3.util.AppReloader;
 import com.android.launcher3.util.ContentProviderProxy.ProxyProvider;
 import com.android.launcher3.util.DaggerSingletonTracker;
 import com.android.launcher3.util.Executors;
@@ -122,6 +124,12 @@ public class GridCustomizationsProxy implements ProxyProvider {
     private static final String SET_ICON_THEMED = "/set_icon_themed";
     private static final String ICON_THEMED = "/icon_themed";
     private static final String BOOLEAN_VALUE = "boolean_value";
+    
+    private static final String GET_ICON_PACK = "/get_icon_pack";
+    private static final String SET_ICON_PACK = "/set_icon_pack";
+    private static final String ICON_PACK = "/icon_pack";
+    private static final String STRING_VALUE = "string_value";
+    private static final String KEY_ICON_PACK = "icon_pack";
 
     private static final String KEY_SURFACE_PACKAGE = "surface_package";
     private static final String KEY_CALLBACK = "callback";
@@ -224,6 +232,13 @@ public class GridCustomizationsProxy implements ProxyProvider {
                 cursor.newRow().add(BOOLEAN_VALUE, mThemeManager.isMonoThemeEnabled() ? 1 : 0);
                 return cursor;
             }
+            case GET_ICON_PACK:
+            case ICON_PACK: {
+                MatrixCursor cursor = new MatrixCursor(new String[]{STRING_VALUE});
+                String currentIconPack = IconDatabase.getGlobal(mContext);
+                cursor.newRow().add(STRING_VALUE, currentIconPack != null ? currentIconPack : "");
+                return cursor;
+            }
             default:
                 return null;
         }
@@ -279,6 +294,13 @@ public class GridCustomizationsProxy implements ProxyProvider {
                 mContext.getContentResolver().notifyChange(uri, null);
                 return 1;
             }
+            case ICON_PACK:
+            case SET_ICON_PACK:
+                IconDatabase.clearAll(mContext);
+                IconDatabase.setGlobal(mContext, values.getAsString(STRING_VALUE));
+                AppReloader.get(mContext).reload();
+                mContext.getContentResolver().notifyChange(uri, null);
+                return 1;
             default:
                 return 0;
         }
