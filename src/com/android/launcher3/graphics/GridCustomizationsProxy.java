@@ -19,6 +19,7 @@ package com.android.launcher3.graphics;
 import static com.android.launcher3.graphics.ThemeManager.PREF_ICON_SHAPE;
 import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 import static com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR;
+import static com.android.launcher3.LauncherPrefs.GRID_NAME;
 
 import static java.util.Objects.requireNonNullElse;
 
@@ -135,6 +136,7 @@ public class GridCustomizationsProxy implements ProxyProvider {
     private static final String KEY_CALLBACK = "callback";
     public static final String KEY_HIDE_BOTTOM_ROW = "hide_bottom_row";
     public static final String KEY_GRID_NAME = "grid_name";
+    private static final String GET_CURRENT_GRID = "/get_grid_name";
 
     private static final int MESSAGE_ID_UPDATE_PREVIEW = 1337;
     private static final int MESSAGE_ID_UPDATE_SHAPE = 2586;
@@ -239,6 +241,11 @@ public class GridCustomizationsProxy implements ProxyProvider {
                 cursor.newRow().add(STRING_VALUE, currentIconPack != null ? currentIconPack : "");
                 return cursor;
             }
+            case GET_CURRENT_GRID:
+                MatrixCursor cursor = new MatrixCursor(new String[]{KEY_GRID_NAME});
+                String gridName = LauncherPrefs.get(mContext).get(GRID_NAME);
+                cursor.newRow().add(KEY_GRID_NAME, gridName != null ? gridName : "");
+                return cursor;
             default:
                 return null;
         }
