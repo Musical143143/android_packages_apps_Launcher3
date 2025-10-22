@@ -293,6 +293,7 @@ public class OptionsPopupView<T extends Context & ActivityContext> extends Arrow
                 "com.android.axion.themepicker.ui.MainActivity"
         );
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.putExtra("is_launch_extra", true);
         return launcher.startActivitySafely(v, intent, placeholderInfo(intent)) != null;
     }
 
