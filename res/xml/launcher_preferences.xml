@@ -20,29 +20,6 @@
     xmlns:settings="http://schemas.android.com/apk/res-auto"
     android:title="@string/pulse_settings">
 
-    <com.android.launcher3.settings.preferences.CustomSeekBarPreference
-        android:key="pref_custom_icon_size"
-        android:title="@string/icon_size_title"
-        android:persistent="true"
-        android:max="150"
-        android:min="50"
-        settings:units="%"
-        android:defaultValue="100" />
-
-    <com.android.launcher3.settings.preferences.CustomSeekBarPreference
-        android:key="pref_custom_font_size"
-        android:title="@string/font_size_title"
-        android:persistent="true"
-        android:max="150"
-        android:min="50"
-        settings:units="%"
-        android:defaultValue="100" />
-
-    <com.android.launcher3.settings.preference.ReloadingListPreference
-        android:key="pref_icon_pack"
-        android:title="@string/app_info_icon_pack"
-        android:persistent="true" />
-
     <SwitchPreferenceCompat
         android:key="blur_enabled"
         android:title="@string/blur_enabled_title"

@@ -104,8 +104,6 @@ public class SettingsActivity extends FragmentActivity
     private static final String KEY_SUGGESTIONS = "pref_suggestions";
     private static final String SUGGESTIONS_PACKAGE = "com.google.android.as";
     
-    private static final String KEY_ICON_PACK = "pref_icon_pack";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -324,18 +322,6 @@ public class SettingsActivity extends FragmentActivity
             switch (preference.getKey()) {
                 case NOTIFICATION_DOTS_PREFERENCE_KEY:
                     return BuildConfig.NOTIFICATION_DOTS_ENABLED;
-                case KEY_ICON_PACK:
-                    mIconPackPref = (ReloadingListPreference) preference;
-                    mIconPackPref.setValue(IconDatabase.getGlobal(getActivity()));
-                    mIconPackPref.setOnReloadListener(IconPackPrefSetter::new);
-                    mIconPackPref.setIcon(getPackageIcon(IconDatabase.getGlobal(getActivity())));
-                    mIconPackPref.setOnPreferenceChangeListener((pref, val) -> {
-                        IconDatabase.clearAll(getActivity());
-                        IconDatabase.setGlobal(getActivity(), (String) val);
-                        mIconPackPref.setIcon(getPackageIcon((String) val));
-                        AppReloader.get(getActivity()).reload();
-                        return true;
-                    });
                 case ALLOW_ROTATION_PREFERENCE_KEY:
                     if (Flags.oneGridSpecs()) {
                         return false;

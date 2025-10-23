@@ -137,6 +137,12 @@ public class GridCustomizationsProxy implements ProxyProvider {
     public static final String KEY_HIDE_BOTTOM_ROW = "hide_bottom_row";
     public static final String KEY_GRID_NAME = "grid_name";
     private static final String GET_CURRENT_GRID = "/get_grid_name";
+    private static final String GET_FONT_SIZE = "/get_font_size";
+    private static final String ICON_SIZE = "/icon_size";
+    private static final String FONT_SIZE = "/font_size";
+
+    public static final String KEY_FONT_SIZE = "font_size";
+    public static final String KEY_ICON_SIZE = "icon_size";
 
     private static final int MESSAGE_ID_UPDATE_PREVIEW = 1337;
     private static final int MESSAGE_ID_UPDATE_SHAPE = 2586;
@@ -241,11 +247,24 @@ public class GridCustomizationsProxy implements ProxyProvider {
                 cursor.newRow().add(STRING_VALUE, currentIconPack != null ? currentIconPack : "");
                 return cursor;
             }
-            case GET_CURRENT_GRID:
+            case GET_CURRENT_GRID: {
                 MatrixCursor cursor = new MatrixCursor(new String[]{KEY_GRID_NAME});
                 String gridName = LauncherPrefs.get(mContext).get(GRID_NAME);
                 cursor.newRow().add(KEY_GRID_NAME, gridName != null ? gridName : "");
                 return cursor;
+            }
+            case ICON_SIZE: {
+                MatrixCursor cursor = new MatrixCursor(new String[]{KEY_ICON_SIZE});
+                String iconSize = String.valueOf(LauncherPrefs.ICON_SIZE.get(mContext));
+                cursor.newRow().add(KEY_ICON_SIZE, iconSize != null ? iconSize : "");
+                return cursor;
+            }
+            case FONT_SIZE: {
+                MatrixCursor cursor = new MatrixCursor(new String[]{KEY_FONT_SIZE});
+                String fontSize = String.valueOf(LauncherPrefs.FONT_SIZE.get(mContext));
+                cursor.newRow().add(KEY_FONT_SIZE, fontSize != null ? fontSize : "");
+                return cursor;
+            }
             default:
                 return null;
         }
@@ -306,6 +325,14 @@ public class GridCustomizationsProxy implements ProxyProvider {
                 IconDatabase.clearAll(mContext);
                 IconDatabase.setGlobal(mContext, values.getAsString(STRING_VALUE));
                 AppReloader.get(mContext).reload();
+                mContext.getContentResolver().notifyChange(uri, null);
+                return 1;
+            case FONT_SIZE:
+                mPrefs.put(LauncherPrefs.FONT_SIZE, values.getAsInteger(KEY_FONT_SIZE));
+                mContext.getContentResolver().notifyChange(uri, null);
+                return 1;
+            case ICON_SIZE:
+                mPrefs.put(LauncherPrefs.ICON_SIZE, values.getAsInteger(KEY_ICON_SIZE));
                 mContext.getContentResolver().notifyChange(uri, null);
                 return 1;
             default:
