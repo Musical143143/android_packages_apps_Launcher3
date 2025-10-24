@@ -312,14 +312,11 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
         mDisplay = a.getInteger(R.styleable.BubbleTextView_iconDisplay, DISPLAY_WORKSPACE);
         final int defaultIconSize;
         if (mDisplay == DISPLAY_WORKSPACE) {
-            final int columns = mDeviceProfile.inv.numColumns;
-            final int rows = mDeviceProfile.inv.numRows;
-            final boolean hideWorkSpaceLabel= columns == 4 && rows >= 7;
-            setTextSize(TypedValue.COMPLEX_UNIT_PX, hideWorkSpaceLabel ? 0 : mDeviceProfile.iconTextSizePx);
-            setCompoundDrawablePadding(hideWorkSpaceLabel ? 0 : mDeviceProfile.iconDrawablePaddingPx);
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, mDeviceProfile.iconTextSizePx);
+            setCompoundDrawablePadding(mDeviceProfile.iconDrawablePaddingPx);
             defaultIconSize = mDeviceProfile.iconSizePx;
-            setCenterVertically(hideWorkSpaceLabel ? true : mDeviceProfile.iconCenterVertically);
-            mShouldShowLabel = !hideWorkSpaceLabel && SHOW_DESKTOP_LABELS.get(context);
+            setCenterVertically(mDeviceProfile.iconCenterVertically);
+            mShouldShowLabel = SHOW_DESKTOP_LABELS.get(context);
         } else if (displayIsAppDrawer()) {
             setTextSize(TypedValue.COMPLEX_UNIT_PX, mDeviceProfile.allAppsIconTextSizePx);
             setCompoundDrawablePadding(mDeviceProfile.allAppsIconDrawablePaddingPx);
